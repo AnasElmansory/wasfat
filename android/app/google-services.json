@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "54356560170",
+    "project_id": "wasfat-5edfe",
+    "storage_bucket": "wasfat-5edfe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54356560170:android:47425d9c7752564b5a7653",
+        "android_client_info": {
+          "package_name": "ok2code.wasafatakl.wasfat_akl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "54356560170-cfa8lud119comuau17rn1vef6vpimcr3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ok2code.wasafatakl.wasfat_akl",
+            "certificate_hash": "c65e025d6db9fcf280ccf1e0775851bbd92b1736"
+          }
+        },
+        {
+          "client_id": "54356560170-gnp6fbqai3q63mf9qlise6is09b9170j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ok2code.wasafatakl.wasfat_akl",
+            "certificate_hash": "f685d16c70cb9fe750bede2707ef8f89194585f8"
+          }
+        },
+        {
+          "client_id": "54356560170-t9rb5pnt1jb5a5te3odrs7s1lie5lv2m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTezbm-9cMah7YgT2edmQQ_Q-Pj068DnQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "54356560170-t9rb5pnt1jb5a5te3odrs7s1lie5lv2m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
