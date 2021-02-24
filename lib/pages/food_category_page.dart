@@ -4,6 +4,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:wasfat_akl/custom_widgets/custom_bar.dart';
 import 'package:provider/provider.dart';
+import 'package:wasfat_akl/get_it.dart';
+import 'package:wasfat_akl/providers/dish_likes_provider.dart';
 import 'package:wasfat_akl/providers/food_category_provider.dart';
 import 'package:wasfat_akl/providers/shared_preferences_provider.dart';
 
@@ -126,8 +128,13 @@ class _FoodCategoryPageState extends State<FoodCategoryPage>
                             }),
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => OneDishPage(
-                                    mDish: category.dishes[index],
+                              builder: (context) => ChangeNotifierProvider(
+                                    create: (_) => getIt<DishLikesProvider>()
+                                      ..listenDishLikes(
+                                          category.dishes[index].id),
+                                    child: OneDishPage(
+                                      mDish: category.dishes[index],
+                                    ),
                                   )));
                         }));
               },

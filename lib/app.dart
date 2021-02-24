@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:wasfat_akl/get_it.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:wasfat_akl/providers/dish_actions_provider.dart';
+import 'package:wasfat_akl/providers/dish_likes_provider.dart';
 import 'package:wasfat_akl/providers/food_category_provider.dart';
 import 'package:wasfat_akl/providers/shared_preferences_provider.dart';
 import 'pages/home_page.dart';

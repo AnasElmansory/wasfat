@@ -17,10 +17,10 @@ class Dish {
     this.id,
     this.name,
     this.subtitle,
-    this.categoryId,
     this.dishDescription,
     this.addDate,
     this.rating,
+    this.categoryId,
     this.dishImages,
     this.dishVideo,
   });
@@ -40,10 +40,10 @@ class Dish {
       id: id ?? this.id,
       name: name ?? this.name,
       subtitle: subtitle ?? this.subtitle,
-      categoryId: categoryId ?? this.categoryId,
       dishDescription: dishDescription ?? this.dishDescription,
       addDate: addDate ?? this.addDate,
       rating: rating ?? this.rating,
+      categoryId: categoryId ?? this.categoryId,
       dishImages: dishImages ?? this.dishImages,
       dishVideo: dishVideo ?? this.dishVideo,
     );
@@ -54,10 +54,10 @@ class Dish {
       'id': id,
       'name': name,
       'subtitle': subtitle,
-      'categoryId': categoryId,
       'dishDescription': dishDescription,
       'addDate': addDate?.millisecondsSinceEpoch,
       'rating': rating,
+      'categoryId': categoryId,
       'dishImages': dishImages,
       'dishVideo': dishVideo,
     };
@@ -65,6 +65,7 @@ class Dish {
 
   factory Dish.fromMap(Map<String, dynamic> map) {
     if (map == null) return null;
+
     return Dish(
       id: map['id'],
       name: map['name'],
@@ -84,7 +85,7 @@ class Dish {
 
   @override
   String toString() {
-    return 'Dish(id: $id, name: $name, categoryId: $categoryId, subtitle: $subtitle,dishDescription: $dishDescription, addDate: $addDate, rating: $rating, dishImages: $dishImages, dishVideo: $dishVideo)';
+    return 'Dish(id: $id, name: $name, subtitle: $subtitle, dishDescription: $dishDescription, addDate: $addDate, rating: $rating, categoryId: $categoryId, dishImages: $dishImages, dishVideo: $dishVideo)';
   }
 
   @override
@@ -97,7 +98,6 @@ class Dish {
         o.subtitle == subtitle &&
         o.dishDescription == dishDescription &&
         o.addDate == addDate &&
-        mapEquals(o.rating, rating) &&
         listEquals(o.categoryId, categoryId) &&
         listEquals(o.dishImages, dishImages) &&
         o.dishVideo == dishVideo;
@@ -108,10 +108,10 @@ class Dish {
     return id.hashCode ^
         name.hashCode ^
         subtitle.hashCode ^
-        categoryId.hashCode ^
         dishDescription.hashCode ^
         addDate.hashCode ^
         rating.hashCode ^
+        categoryId.hashCode ^
         dishImages.hashCode ^
         dishVideo.hashCode;
   }

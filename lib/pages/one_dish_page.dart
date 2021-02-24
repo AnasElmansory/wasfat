@@ -1,8 +1,5 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:date_format/date_format.dart';
-import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -22,8 +19,8 @@ import 'package:wasfat_akl/providers/dish_actions_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:wasfat_akl/pages/sign_in_page.dart';
 import 'package:wasfat_akl/pages/comment_page.dart';
+import 'package:wasfat_akl/providers/dish_likes_provider.dart';
 import 'package:wasfat_akl/providers/expand_comment_provider.dart';
-import 'package:wasfat_akl/providers/faveorite_button_provider.dart';
 import 'package:wasfat_akl/providers/shared_preferences_provider.dart';
 
 class OneDishPage extends StatefulWidget {
@@ -97,6 +94,7 @@ class _OneDishPageState extends State<OneDishPage>
                       name: widget.mDish.name,
                       imageUrl: widget.mDish.dishImages.first,
                       rating: dishProvider.dishRating,
+                      dishId: widget.mDish.id,
                     ),
                     SliverList(
                       delegate: SliverChildListDelegate([
@@ -175,9 +173,9 @@ class _OneDishPageState extends State<OneDishPage>
                               itemCount: 5,
                               itemPadding:
                                   const EdgeInsets.symmetric(horizontal: 4.0),
-                              itemBuilder: (context, _) => Icon(
+                              itemBuilder: (context, _) => const Icon(
                                 Icons.star,
-                                color: Colors.amber[700],
+                                color: const Color(0xFFFFA000),
                               ),
                               onRatingUpdate: (rating) =>
                                   dishProvider.rating = rating.floor(),
@@ -346,27 +344,30 @@ class _OneDishPageState extends State<OneDishPage>
                 right: 0,
                 child: FadeTransition(
                   opacity: _animationController,
-                  child: MaterialButton(
-                    padding: const EdgeInsets.all(12),
-                    child: shared.favouriteDishes.contains(widget.mDish)
-                        ? const Icon(
-                            Icons.favorite,
-                            color: Colors.red,
-                            size: 30,
-                          )
-                        : const Icon(
-                            Icons.favorite,
-                            color: Colors.grey,
-                            size: 30,
-                          ),
-                    onPressed: () async =>
-                        shared.favouriteDishes.contains(widget.mDish)
-                            ? await shared.removeFavouriteDish(widget.mDish)
-                            : await shared.addFavouriteDish(widget.mDish),
-                    color: shared.favouriteDishes.contains(widget.mDish)
-                        ? Colors.amber[700]
-                        : Colors.blueGrey[800],
-                    shape: CircleBorder(),
+                  child: ScaleTransition(
+                    scale: _animationController,
+                    child: MaterialButton(
+                      padding: const EdgeInsets.all(12),
+                      child: shared.favouriteDishes.contains(widget.mDish)
+                          ? const Icon(
+                              Icons.favorite,
+                              color: Colors.red,
+                              size: 30,
+                            )
+                          : const Icon(
+                              Icons.favorite,
+                              color: Colors.black26,
+                              size: 30,
+                            ),
+                      onPressed: () async =>
+                          shared.favouriteDishes.contains(widget.mDish)
+                              ? await shared.removeFavouriteDish(widget.mDish)
+                              : await shared.addFavouriteDish(widget.mDish),
+                      color: shared.favouriteDishes.contains(widget.mDish)
+                          ? Colors.amber[800]
+                          : Colors.amber[800],
+                      shape: const CircleBorder(),
+                    ),
                   ),
                 ),
               ),

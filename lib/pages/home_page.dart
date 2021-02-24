@@ -20,6 +20,7 @@ import 'package:wasfat_akl/pages/privacy_page.dart';
 import 'package:wasfat_akl/pages/sign_in_page.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:wasfat_akl/providers/dish_actions_provider.dart';
+import 'package:wasfat_akl/providers/dish_likes_provider.dart';
 import 'package:wasfat_akl/providers/food_category_provider.dart';
 import 'package:wasfat_akl/providers/shared_preferences_provider.dart';
 import 'package:wasfat_akl/providers/slider_indicator_provider.dart';
@@ -191,9 +192,14 @@ class HomePage extends StatelessWidget {
                             context.read<DishProvider>().dishRating = 0.0;
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => OneDishPage(
-                                  mDish:
-                                      foodProvider.dishesRecentlyAdded[index],
+                                builder: (context) => ChangeNotifierProvider(
+                                  create: (_) => getIt<DishLikesProvider>()
+                                    ..listenDishLikes(foodProvider
+                                        .dishesRecentlyAdded[index].id),
+                                  child: OneDishPage(
+                                    mDish:
+                                        foodProvider.dishesRecentlyAdded[index],
+                                  ),
                                 ),
                               ),
                             );
@@ -315,8 +321,13 @@ class HomePage extends StatelessWidget {
                         context.read<DishProvider>().dishRating = 0.0;
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => OneDishPage(
-                              mDish: shared.favouriteDishes[index],
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (_) => getIt<DishLikesProvider>()
+                                ..listenDishLikes(
+                                    shared.favouriteDishes[index].id),
+                              child: OneDishPage(
+                                mDish: shared.favouriteDishes[index],
+                              ),
                             ),
                           ),
                         );
@@ -359,13 +370,16 @@ class HomePage extends StatelessWidget {
                   itemBuilder: (context, index) => InkWell(
                     onTap: () {
                       context.read<DishProvider>().dishRating = 0.0;
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => OneDishPage(
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (_) => getIt<DishLikesProvider>()
+                            ..listenDishLikes(
+                                shared.lastVisitedDishes[index].id),
+                          child: OneDishPage(
                             mDish: shared.lastVisitedDishes[index],
                           ),
                         ),
-                      );
+                      ));
                     },
                     onLongPress: () async {
                       await showDialog<bool>(

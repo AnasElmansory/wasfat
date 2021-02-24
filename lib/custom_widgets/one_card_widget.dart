@@ -56,18 +56,20 @@ class OneCardWidget extends StatelessWidget {
                           end: Alignment.topCenter,
                           colors: [
                             Colors.black,
+                            Colors.black,
                             Colors.black12,
                             Color.fromRGBO(255, 255, 255, 0.2)
                           ])),
                   child: Container(
-                    margin: const EdgeInsets.only(bottom: 12.0),
+                    width: size.width,
+                    margin: const EdgeInsets.only(bottom: 8.0),
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: Text(
                         name,
                         style: TextStyle(color: textColor, fontSize: 18),
-                        textAlign: TextAlign.right,
+                        textAlign: TextAlign.center,
                         textDirection: TextDirection.rtl,
                       ),
                     ),
