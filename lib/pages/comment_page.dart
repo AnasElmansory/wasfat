@@ -4,12 +4,12 @@ import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-import 'package:wasfat_akl/custom_widgets/confirmation_dialog.dart';
 import 'package:wasfat_akl/models/comment.dart';
 import 'package:wasfat_akl/models/dish.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:wasfat_akl/providers/dish_actions_provider.dart';
 import 'package:wasfat_akl/providers/expand_comment_provider.dart';
+import 'package:wasfat_akl/widgets/core/confirmation_dialog.dart';
 
 class CommentPage extends StatefulWidget {
   final Dish dish;
@@ -62,7 +62,7 @@ class _CommentPageState extends State<CommentPage>
         ],
       ),
       body: StreamBuilder<List<Comment>>(
-        stream: comment.watchCommentByDish(widget.dish),
+        stream: comment.watchCommentByDish(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting)
             return const Center(
@@ -107,12 +107,12 @@ class _CommentPageState extends State<CommentPage>
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              if (comment.usersRating
+                              if (comment.dish.rating
                                   .containsKey(oneComment.ownerId))
-                                Text(comment.usersRating[oneComment.ownerId]
+                                Text(comment.dish.rating[oneComment.ownerId]
                                         .toString() ??
                                     ''),
-                              if (comment.usersRating
+                              if (comment.dish.rating
                                   .containsKey(oneComment.ownerId))
                                 const Icon(
                                   Icons.star,

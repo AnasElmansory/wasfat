@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:wasfat_akl/helper/privacy_conditions.dart';
+import 'package:wasfat_akl/helper/constants.dart';
 
 class PrivacyPage extends StatelessWidget {
   const PrivacyPage();

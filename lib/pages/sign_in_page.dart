@@ -4,30 +4,17 @@ import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:wasfat_akl/get_it.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:wasfat_akl/providers/food_category_provider.dart';
 
-class SignInPage extends StatefulWidget {
+typedef Sign = Future<void> Function();
+
+class SignInPage extends StatelessWidget {
   const SignInPage();
-  @override
-  _SignInPageState createState() => _SignInPageState();
-}
-
-class _SignInPageState extends State<SignInPage> {
-  final checker = getIt<DataConnectionChecker>();
-  // @override
-  // void initState() {
-  //   final auth = context.read<Auth>();
-  //   auth.addListener(() {
-  //     if (auth.isLoggedIn) Navigator.of(context).pop();
-  //   });
-  //   super.initState();
-  // }
 
   @override
   Widget build(BuildContext context) {
+    final checker = getIt<DataConnectionChecker>();
     final size = MediaQuery.of(context).size;
     final auth = context.watch<Auth>();
-    final foodProvider = context.watch<FoodCategoryProvider>();
     return Scaffold(
       appBar: AppBar(elevation: 0),
       backgroundColor: Colors.amber[700],
@@ -68,25 +55,20 @@ class _SignInPageState extends State<SignInPage> {
               SignInButton(
                 Buttons.Google,
                 onPressed: () async {
+                  final Sign signMethod =
+                      () async => await auth.signInWithGoogle().then((_) async {
+                            if (context.read<Auth>().isLoggedIn)
+                              Navigator.of(context).pop();
+                          });
                   if (!await checker.hasConnection)
                     return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       action: SnackBarAction(
-                        label: 'حاول مره أخرى',
-                        onPressed: () async {
-                          foodProvider
-                            ..getFoodCategory()
-                            ..getDishesRecentlyAdded();
-                        },
-                      ),
-                      content: const Text(
-                        'تأكد من اتصالك باللانترنت',
-                      ),
+                          label: 'حاول مره أخرى',
+                          onPressed: () async => await signMethod()),
+                      content: const Text('تأكد من اتصالك باللانترنت'),
                     ));
                   else
-                    await auth.signInWithGoogle().then((_) async {
-                      if (context.read<Auth>().isLoggedIn)
-                        Navigator.of(context).pop();
-                    });
+                    await signMethod();
                 },
                 shape: const RoundedRectangleBorder(
                   borderRadius:
@@ -99,25 +81,21 @@ class _SignInPageState extends State<SignInPage> {
               SignInButton(
                 Buttons.Facebook,
                 onPressed: () async {
-                  if (!await checker.hasConnection)
-                    return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      action: SnackBarAction(
-                        label: 'حاول مره أخرى',
-                        onPressed: () async {
-                          foodProvider
-                            ..getFoodCategory()
-                            ..getDishesRecentlyAdded();
-                        },
-                      ),
-                      content: const Text(
-                        'تأكد من اتصالك باللانترنت',
-                      ),
-                    ));
-                  else
+                  final Sign signMethod = () async {
                     await auth.signInWithFacebook().then((_) async {
                       if (context.read<Auth>().isLoggedIn)
                         Navigator.of(context).pop();
                     });
+                  };
+                  if (!await checker.hasConnection)
+                    return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      action: SnackBarAction(
+                          label: 'حاول مره أخرى',
+                          onPressed: () async => await signMethod()),
+                      content: const Text('تأكد من اتصالك باللانترنت'),
+                    ));
+                  else
+                    await signMethod();
                 },
                 shape: const RoundedRectangleBorder(
                   borderRadius:

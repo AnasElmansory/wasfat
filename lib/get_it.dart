@@ -8,9 +8,9 @@ import 'package:package_info/package_info.dart';
 import 'package:wasfat_akl/helper/internet_helper.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:wasfat_akl/providers/dish_actions_provider.dart';
-import 'package:wasfat_akl/providers/dish_likes_provider.dart';
 import 'package:wasfat_akl/providers/food_category_provider.dart';
 import 'package:wasfat_akl/providers/shared_preferences_provider.dart';
+import 'package:wasfat_akl/providers/search_provider.dart';
 
 final getIt = GetIt.instance;
 
@@ -21,10 +21,13 @@ void init() {
       ));
   getIt.registerFactory<SharedPreferencesProvider>(
       () => SharedPreferencesProvider()..sharedInstance);
-  getIt.registerFactory<DishProvider>(
-      () => DishProvider(getIt<FirebaseFirestore>()));
-  getIt.registerFactory<DishLikesProvider>(
-      () => DishLikesProvider(getIt<FirebaseFirestore>()));
+  getIt.registerFactory<DishProvider>(() => DishProvider(
+        getIt<FirebaseFirestore>(),
+        getIt<DataConnectionChecker>(),
+      ));
+
+  getIt.registerFactory<SearchProvider>(
+      () => SearchProvider(getIt<FirebaseFirestore>()));
 
   getIt.registerFactory<Auth>(
     () => Auth(
@@ -32,7 +35,6 @@ void init() {
       getIt<FacebookAuth>(),
       getIt<FirebaseAuth>(),
       getIt<FirebaseFirestore>(),
-      getIt<DataConnectionChecker>(),
     ),
   );
 

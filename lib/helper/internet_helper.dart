@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
-import 'package:package_info/package_info.dart';
 import 'package:wasfat_akl/get_it.dart';
 import 'package:wasfat_akl/pages/terms_condition_page.dart';
 import 'package:wasfat_akl/providers/food_category_provider.dart';
@@ -17,9 +16,9 @@ class InternetHelper {
   Future<GetOptions> internetValidation() async {
     GetOptions options;
     if (await isConnected)
-      options = GetOptions(source: Source.serverAndCache);
+      options = const GetOptions(source: Source.serverAndCache);
     else
-      options = GetOptions(source: Source.cache);
+      options = const GetOptions(source: Source.cache);
     return options;
   }
 
@@ -35,16 +34,13 @@ class InternetHelper {
           foodProvider.foodCategories.isEmpty)
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           action: SnackBarAction(
-            label: 'حاول مره أخرى',
-            onPressed: () async {
-              foodProvider
-                ..getFoodCategory()
-                ..getDishesRecentlyAdded();
-            },
-          ),
-          content: const Text(
-            'تأكد من اتصالك باللانترنت',
-          ),
+              label: 'حاول مره أخرى',
+              onPressed: () async {
+                foodProvider
+                  ..getFoodCategory()
+                  ..getDishesRecentlyAdded();
+              }),
+          content: const Text('تأكد من اتصالك باللانترنت'),
         ));
     });
   }

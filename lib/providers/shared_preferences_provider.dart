@@ -1,8 +1,12 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wasfat_akl/models/dish.dart';
 
 class SharedPreferencesProvider extends ChangeNotifier {
+  final favKey = GlobalKey<AnimatedListState>();
+  final lastVisitedKey = GlobalKey<AnimatedListState>();
+
   List<Dish> lastVisitedDishes = <Dish>[];
   List<Dish> favouriteDishes = <Dish>[];
 
@@ -22,32 +26,6 @@ class SharedPreferencesProvider extends ChangeNotifier {
   Future<bool> acceptedTermsAndConditions() async =>
       await _prefs.setBool('isFirstTime', true);
 
-  Future<void> getLastVisitedDishes() async {
-    if (_prefs == null) await sharedInstance;
-
-    if (_prefs.containsKey('visitedDishes') != null &&
-        _prefs.getStringList('visitedDishes') != null) {
-      lastVisitedDishes = _prefs
-          .getStringList('visitedDishes')
-          .map<Dish>((dish) => Dish.fromJson(dish))
-          .toList();
-      notifyListeners();
-    }
-  }
-
-  Future<void> setLastVisitedDishes(Dish visitedDish) async {
-    List tempDishIdList = <String>[];
-
-    tempDishIdList = lastVisitedDishes.map((dish) => dish.id).toList();
-    if (!tempDishIdList.contains(visitedDish.id)) {
-      lastVisitedDishes.add(visitedDish);
-
-      await _prefs.setStringList('visitedDishes',
-          lastVisitedDishes.map((dish) => dish.toJson()).toList());
-      notifyListeners();
-    }
-  }
-
   Future<void> getFavouriteDishes() async {
     if (_prefs == null) await sharedInstance;
     if (_prefs.containsKey('favouriteDishes') != null &&
@@ -65,22 +43,51 @@ class SharedPreferencesProvider extends ChangeNotifier {
     tempDishIdList = favouriteDishes.map((dish) => dish.id).toList();
     if (!tempDishIdList.contains(favouriteDish.id)) {
       favouriteDishes.add(favouriteDish);
-      notifyListeners();
+      // favKey.currentState.insertItem(favouriteDishes.length - 1);
       await _prefs.setStringList('favouriteDishes',
           favouriteDishes.map((dish) => dish.toJson()).toList());
+      notifyListeners();
     }
   }
 
-  Future<void> removeFavouriteDish(Dish favouriteDishes) async {
+  Future<void> removeFavouriteDish(Dish favouriteDish) async {
     List tempDishList = <String>[];
     if (_prefs.containsKey('favouriteDishes') != null &&
         _prefs.getStringList('favouriteDishes') != null) {
       tempDishList = _prefs.getStringList('favouriteDishes').toList();
-      final jsonDish = favouriteDishes.toJson();
+      final jsonDish = favouriteDish.toJson();
+
       final isRemoved = tempDishList.remove(jsonDish);
       if (isRemoved)
         await _prefs.setStringList('favouriteDishes', tempDishList);
+
       getFavouriteDishes();
+    }
+  }
+
+  Future<void> getLastVisitedDishes() async {
+    if (_prefs == null) await sharedInstance;
+
+    if (_prefs.containsKey('visitedDishes') != null &&
+        _prefs.getStringList('visitedDishes') != null) {
+      lastVisitedDishes = _prefs
+          .getStringList('visitedDishes')
+          .map<Dish>((dish) => Dish.fromJson(dish))
+          .toList();
+      notifyListeners();
+    }
+  }
+
+  Future<void> setLastVisitedDish(Dish visitedDish) async {
+    List tempDishIdList = <String>[];
+
+    tempDishIdList = lastVisitedDishes.map((dish) => dish.id).toList();
+    if (!tempDishIdList.contains(visitedDish.id)) {
+      lastVisitedDishes.add(visitedDish);
+      // lastVisitedKey.currentState.insertItem(lastVisitedDishes.length - 1);
+      await _prefs.setStringList('visitedDishes',
+          lastVisitedDishes.map((dish) => dish.toJson()).toList());
+      notifyListeners();
     }
   }
 
@@ -91,7 +98,13 @@ class SharedPreferencesProvider extends ChangeNotifier {
       tempDishList = _prefs.getStringList('visitedDishes').toList();
       final jsonDish = visitedDishes.toJson();
       final isRemoved = tempDishList.remove(jsonDish);
-      if (isRemoved) await _prefs.setStringList('visitedDishes', tempDishList);
+      if (isRemoved)
+        // lastVisitedKey.currentState.removeItem(
+        //     index,
+        //     (context, animation) =>
+        //         _removedWidget(animation, visitedDishes, size));
+        await _prefs.setStringList('visitedDishes', tempDishList);
+
       getLastVisitedDishes();
     }
   }

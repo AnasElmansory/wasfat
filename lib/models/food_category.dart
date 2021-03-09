@@ -1,21 +1,18 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-
 import 'dish.dart';
 
 class FoodCategory {
   final String id;
   final String name;
   final String imageUrl;
-  final String banner;
+
   final List<Dish> dishes;
 
   FoodCategory({
     this.id,
     this.name,
     this.imageUrl,
-    this.banner,
     this.dishes,
   });
 
@@ -23,14 +20,12 @@ class FoodCategory {
     String id,
     String name,
     String imageUrl,
-    String banner,
     List<Dish> dishes,
   }) {
     return FoodCategory(
       id: id ?? this.id,
       name: name ?? this.name,
       imageUrl: imageUrl ?? this.imageUrl,
-      banner: banner ?? this.banner,
       dishes: dishes ?? this.dishes,
     );
   }
@@ -40,7 +35,6 @@ class FoodCategory {
       'id': id,
       'name': name,
       'imageUrl': imageUrl,
-      'banner': banner,
       'dishes': dishes?.map((x) => x?.toMap())?.toList(),
     };
   }
@@ -52,7 +46,6 @@ class FoodCategory {
       id: map['id'],
       name: map['name'],
       imageUrl: map['imageUrl'],
-      banner: map['banner'],
       dishes: map['dishes'] as List<Dish> ?? null,
     );
   }
@@ -64,7 +57,7 @@ class FoodCategory {
 
   @override
   String toString() {
-    return 'FoodCategory(id: $id, name: $name, imageUrl: $imageUrl, banner: $banner, dishes: $dishes)';
+    return 'FoodCategory(id: $id, name: $name, imageUrl: $imageUrl,  dishes: $dishes)';
   }
 
   @override
@@ -74,17 +67,12 @@ class FoodCategory {
     return o is FoodCategory &&
         o.id == id &&
         o.name == name &&
-        o.imageUrl == imageUrl &&
-        o.banner == banner &&
-        listEquals(o.dishes, dishes);
+        o.imageUrl == imageUrl;
+    // listEquals(o.dishes, dishes);
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^
-        name.hashCode ^
-        imageUrl.hashCode ^
-        banner.hashCode ^
-        dishes.hashCode;
+    return id.hashCode ^ name.hashCode ^ imageUrl.hashCode ^ dishes.hashCode;
   }
 }

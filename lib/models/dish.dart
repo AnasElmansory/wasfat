@@ -7,10 +7,12 @@ class Dish {
   final String name;
   final String subtitle;
   final String dishDescription;
+  final int likesCount;
   final DateTime addDate;
   final Map<String, int> rating;
   final List<String> categoryId;
   final List<String> dishImages;
+  final List<String> usersLikes;
   final String dishVideo;
 
   Dish({
@@ -19,9 +21,11 @@ class Dish {
     this.subtitle,
     this.dishDescription,
     this.addDate,
+    this.likesCount = 0,
     this.rating,
     this.categoryId,
     this.dishImages,
+    this.usersLikes,
     this.dishVideo,
   });
 
@@ -31,9 +35,11 @@ class Dish {
     String subtitle,
     String dishDescription,
     DateTime addDate,
+    int likesCount,
     Map<String, int> rating,
     List<String> categoryId,
     List<String> dishImages,
+    List<String> usersLikes,
     String dishVideo,
   }) {
     return Dish(
@@ -42,9 +48,11 @@ class Dish {
       subtitle: subtitle ?? this.subtitle,
       dishDescription: dishDescription ?? this.dishDescription,
       addDate: addDate ?? this.addDate,
+      likesCount: likesCount ?? this.likesCount,
       rating: rating ?? this.rating,
       categoryId: categoryId ?? this.categoryId,
       dishImages: dishImages ?? this.dishImages,
+      usersLikes: usersLikes ?? this.usersLikes,
       dishVideo: dishVideo ?? this.dishVideo,
     );
   }
@@ -56,9 +64,11 @@ class Dish {
       'subtitle': subtitle,
       'dishDescription': dishDescription,
       'addDate': addDate?.millisecondsSinceEpoch,
+      'likesCount': likesCount,
       'rating': rating,
       'categoryId': categoryId,
       'dishImages': dishImages,
+      'usersLikes': usersLikes,
       'dishVideo': dishVideo,
     };
   }
@@ -67,14 +77,16 @@ class Dish {
     if (map == null) return null;
 
     return Dish(
-      id: map['id'],
-      name: map['name'],
-      subtitle: map['subtitle'],
-      dishDescription: map['dishDescription'],
+      id: map['id'] as String,
+      name: map['name'] as String,
+      subtitle: map['subtitle'] as String,
+      dishDescription: map['dishDescription'] as String,
+      likesCount: map['likesCount'] as int,
       addDate: DateTime.fromMillisecondsSinceEpoch(map['addDate']),
-      rating: Map<String, int>.from(map['rating']),
-      categoryId: List<String>.from(map['categoryId']),
-      dishImages: List<String>.from(map['dishImages']),
+      rating: Map<String, int>.from(map['rating'] ?? {}),
+      categoryId: List<String>.from(map['categoryId'] ?? []),
+      dishImages: List<String>.from(map['dishImages'] ?? []),
+      usersLikes: List<String>.from(map['usersLikes'] ?? []),
       dishVideo: map['dishVideo'],
     );
   }
@@ -99,7 +111,7 @@ class Dish {
         o.dishDescription == dishDescription &&
         o.addDate == addDate &&
         listEquals(o.categoryId, categoryId) &&
-        listEquals(o.dishImages, dishImages) &&
+        // listEquals(o.dishImages, dishImages) &&
         o.dishVideo == dishVideo;
   }
 

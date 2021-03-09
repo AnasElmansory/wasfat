@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -12,20 +11,22 @@ class Auth extends ChangeNotifier {
   final FacebookAuth _facebookAuth;
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firestore;
-  final DataConnectionChecker _checker;
 
   Auth(
     this._googleSignIn,
     this._facebookAuth,
     this._firebaseAuth,
     this._firestore,
-    this._checker,
   );
 
   WasfatUser wasfatUser;
 
   bool get isLoggedIn => (_firebaseAuth.currentUser == null) ? false : true;
   String get userId => _firebaseAuth.currentUser?.uid;
+  Future<String> getAccessToken() async {
+    final auth = await _googleSignIn.currentUser.authentication;
+    return auth?.accessToken;
+  }
 
   Future<void> signOut() async {
     await _facebookAuth.logOut();

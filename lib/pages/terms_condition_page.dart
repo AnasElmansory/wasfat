@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:wasfat_akl/helper/privacy_conditions.dart';
+import 'package:wasfat_akl/helper/constants.dart';
 import 'package:wasfat_akl/pages/home_page.dart';
 import 'package:wasfat_akl/providers/shared_preferences_provider.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +26,7 @@ class TermsAndConditionPage extends StatelessWidget {
           final result = await shared.acceptedTermsAndConditions();
           if (result)
             Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (_) => HomePage()));
+                context, MaterialPageRoute(builder: (_) => const HomePage()));
         },
       ),
       body: SingleChildScrollView(

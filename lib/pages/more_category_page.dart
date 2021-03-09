@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wasfat_akl/custom_widgets/one_card_widget.dart';
 import 'package:wasfat_akl/pages/food_category_page.dart';
 import 'package:wasfat_akl/providers/food_category_provider.dart';
+import 'package:wasfat_akl/widgets/one_card_widget.dart';
 
 class MoreCategoryPage extends StatelessWidget {
   @override

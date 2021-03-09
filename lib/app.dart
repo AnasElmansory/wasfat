@@ -6,9 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:wasfat_akl/get_it.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:wasfat_akl/providers/dish_actions_provider.dart';
-import 'package:wasfat_akl/providers/dish_likes_provider.dart';
 import 'package:wasfat_akl/providers/food_category_provider.dart';
 import 'package:wasfat_akl/providers/shared_preferences_provider.dart';
+import 'package:wasfat_akl/providers/search_provider.dart';
+
 import 'pages/home_page.dart';
 
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
@@ -27,12 +28,14 @@ Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
 }
 
 class App extends StatefulWidget {
+  const App();
   @override
   _AppState createState() => _AppState();
 }
 
 class _AppState extends State<App> {
   final firebaseMessaging = FirebaseMessaging();
+
   @override
   void initState() {
     firebaseMessaging.configure(
@@ -56,6 +59,7 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => getIt<SearchProvider>()),
         ChangeNotifierProvider(create: (_) => getIt<Auth>()..getUserData()),
         ChangeNotifierProvider(create: (_) => getIt<DishProvider>()),
         ChangeNotifierProvider(
@@ -80,7 +84,7 @@ class _AppState extends State<App> {
             )),
         color: Colors.amber[900],
         title: 'وصفات',
-        home: HomePage(),
+        home: const HomePage(),
       ),
     );
   }

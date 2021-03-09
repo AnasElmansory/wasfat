@@ -6,34 +6,31 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:uuid/uuid.dart';
-import 'package:wasfat_akl/custom_widgets/confirmation_dialog.dart';
-import 'package:wasfat_akl/custom_widgets/custom_bar.dart';
-import 'package:wasfat_akl/custom_widgets/divider_widget.dart';
-import 'package:wasfat_akl/custom_widgets/one_comment_widget.dart';
-import 'package:wasfat_akl/custom_widgets/show_image_dialog.dart';
 import 'package:wasfat_akl/models/comment.dart';
 import 'package:wasfat_akl/models/dish.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:wasfat_akl/providers/dish_actions_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:wasfat_akl/pages/sign_in_page.dart';
 import 'package:wasfat_akl/pages/comment_page.dart';
-import 'package:wasfat_akl/providers/dish_likes_provider.dart';
 import 'package:wasfat_akl/providers/expand_comment_provider.dart';
 import 'package:wasfat_akl/providers/shared_preferences_provider.dart';
+import 'package:wasfat_akl/widgets/core/confirmation_dialog.dart';
+import 'package:wasfat_akl/widgets/dish_custom_bar.dart';
+import 'package:wasfat_akl/widgets/core/divider_widget.dart';
+import 'package:wasfat_akl/widgets/one_comment_widget.dart';
+import 'package:wasfat_akl/widgets/show_image_dialog.dart';
 
 class OneDishPage extends StatefulWidget {
-  final Dish mDish;
+  final Dish dish;
 
-  const OneDishPage({Key key, this.mDish}) : super(key: key);
+  const OneDishPage({Key key, this.dish}) : super(key: key);
 
   @override
   _OneDishPageState createState() => _OneDishPageState();
 }
 
 class _OneDishPageState extends State<OneDishPage>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
   AnimationController _animationController;
@@ -41,13 +38,12 @@ class _OneDishPageState extends State<OneDishPage>
   @override
   void initState() {
     _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300), value: 1);
-    context
-        .read<DishProvider>()
-        .getOneDishRating(widget.mDish.id, userId: context.read<Auth>().userId);
-    context
-        .read<SharedPreferencesProvider>()
-        .setLastVisitedDishes(widget.mDish);
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+      value: 1,
+    );
+    context.read<DishProvider>().listenToDish(widget.dish.id);
+    context.read<SharedPreferencesProvider>().setLastVisitedDish(widget.dish);
     _scrollController.addListener(() {
       switch (_scrollController.position.userScrollDirection) {
         // Scrolling up - forward the animation (value goes to 1)
@@ -82,7 +78,7 @@ class _OneDishPageState extends State<OneDishPage>
     final shared = context.watch<SharedPreferencesProvider>();
     return Scaffold(
       body: StreamBuilder<List<Comment>>(
-        stream: dishProvider.watchFirstTwoComments(widget.mDish),
+        stream: dishProvider.watchFirstTwoComments(widget.dish.id),
         builder: (context, snapshot) {
           return Stack(
             children: [
@@ -90,12 +86,7 @@ class _OneDishPageState extends State<OneDishPage>
                 child: CustomScrollView(
                   controller: _scrollController,
                   slivers: [
-                    CustomBar(
-                      name: widget.mDish.name,
-                      imageUrl: widget.mDish.dishImages.first,
-                      rating: dishProvider.dishRating,
-                      dishId: widget.mDish.id,
-                    ),
+                    DishCustomBar(dish: widget.dish),
                     SliverList(
                       delegate: SliverChildListDelegate([
                         Container(
@@ -106,7 +97,7 @@ class _OneDishPageState extends State<OneDishPage>
                               border: Border.all(color: Colors.grey),
                               borderRadius: BorderRadius.circular(10)),
                           child: Text(
-                            widget.mDish.subtitle,
+                            widget.dish.subtitle,
                             textAlign: TextAlign.right,
                             textDirection: TextDirection.rtl,
                           ),
@@ -120,7 +111,7 @@ class _OneDishPageState extends State<OneDishPage>
                                 border: Border.all(color: Colors.grey),
                                 borderRadius: BorderRadius.circular(10)),
                             child: Html(
-                              data: widget.mDish.dishDescription,
+                              data: widget.dish.dishDescription,
                               onImageTap: (imageUrl) async {
                                 await showDialog(
                                     context: context,
@@ -182,32 +173,13 @@ class _OneDishPageState extends State<OneDishPage>
                             ),
                             const SizedBox(height: 20.0),
                             MaterialButton(
-                                onPressed: () async {
-                                  if (auth.isLoggedIn) {
-                                    await dishProvider.rate(
-                                      widget.mDish.id,
-                                      auth.userId,
-                                    );
-                                    if (_controller.text.isNotEmpty &&
-                                        _controller.text != null &&
-                                        _controller.text.length < 1500) {
-                                      final comment = Comment(
-                                        id: Uuid().v1(),
-                                        dishId: widget.mDish.id,
-                                        ownerId: auth.userId,
-                                        ownerName: auth.wasfatUser.name,
-                                        ownerPhotoURL: auth.wasfatUser.photoURL,
-                                        content: _controller.text,
-                                        commentDate: DateTime.now(),
-                                      );
-                                      await dishProvider.comment(comment);
-                                      _controller.clear();
-                                    }
-                                  } else
-                                    await Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (_) => SignInPage()));
-                                },
+                                onPressed: () async => await dishProvider
+                                    .onSendPressed(
+                                      context,
+                                      _controller.text,
+                                      auth,
+                                    )
+                                    .then((_) => _controller.clear()),
                                 minWidth: size.width * 0.7,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20)),
@@ -316,7 +288,7 @@ class _OneDishPageState extends State<OneDishPage>
                                                           create: (context) =>
                                                               ExpandCommentProvider(),
                                                           child: CommentPage(
-                                                            dish: widget.mDish,
+                                                            dish: widget.dish,
                                                           ),
                                                         )));
                                           },
@@ -344,11 +316,11 @@ class _OneDishPageState extends State<OneDishPage>
                 right: 0,
                 child: FadeTransition(
                   opacity: _animationController,
-                  child: ScaleTransition(
-                    scale: _animationController,
+                  child: RotationTransition(
+                    turns: _animationController,
                     child: MaterialButton(
                       padding: const EdgeInsets.all(12),
-                      child: shared.favouriteDishes.contains(widget.mDish)
+                      child: shared.favouriteDishes.contains(widget.dish)
                           ? const Icon(
                               Icons.favorite,
                               color: Colors.red,
@@ -356,16 +328,14 @@ class _OneDishPageState extends State<OneDishPage>
                             )
                           : const Icon(
                               Icons.favorite,
-                              color: Colors.black26,
+                              color: Colors.white70,
                               size: 30,
                             ),
                       onPressed: () async =>
-                          shared.favouriteDishes.contains(widget.mDish)
-                              ? await shared.removeFavouriteDish(widget.mDish)
-                              : await shared.addFavouriteDish(widget.mDish),
-                      color: shared.favouriteDishes.contains(widget.mDish)
-                          ? Colors.amber[800]
-                          : Colors.amber[800],
+                          shared.favouriteDishes.contains(widget.dish)
+                              ? await shared.removeFavouriteDish(widget.dish)
+                              : await shared.addFavouriteDish(widget.dish),
+                      color: const Color(0xFFFF8F00),
                       shape: const CircleBorder(),
                     ),
                   ),
