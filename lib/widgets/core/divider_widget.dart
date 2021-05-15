@@ -5,7 +5,11 @@ class DividerWidget extends StatelessWidget {
   final String dividerName;
   final double marginTop, marginBottom;
 
-  const DividerWidget(this.dividerName, this.marginTop, this.marginBottom);
+  const DividerWidget({
+    required this.dividerName,
+    this.marginTop = 0.0,
+    this.marginBottom = 0.0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,20 +18,22 @@ class DividerWidget extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-              child: Divider(
-                height: 2,
-                color: Colors.deepOrange,
-              ),
-              flex: 4),
+            flex: 4,
+            child: Divider(
+              height: 2,
+              color: Colors.deepOrange,
+            ),
+          ),
           Text(
             "    " + dividerName + "    ",
           ),
           Expanded(
-              child: Divider(
-                height: 2,
-                color: Colors.deepOrange,
-              ),
-              flex: 1),
+            flex: 1,
+            child: Divider(
+              height: 2,
+              color: Colors.deepOrange,
+            ),
+          ),
         ],
       ),
     );

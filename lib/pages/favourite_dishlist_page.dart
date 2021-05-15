@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wasfat_akl/providers/shared_preferences_provider.dart';
+import 'package:wasfat_akl/providers/dishes_preferences.dart';
 import 'package:wasfat_akl/widgets/home_widgets.dart/fav_list.dart';
 
 class FavouriteListPage extends StatelessWidget {
@@ -23,7 +23,7 @@ class FavouriteListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shared = context.watch<SharedPreferencesProvider>();
+    final shared = context.watch<DishesPreferencesProvider>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('الاطباق المفضلة'),

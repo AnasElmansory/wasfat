@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 Widget confirmationDialog(
   String title,
@@ -21,14 +22,16 @@ Widget confirmationDialog(
     contentTextStyle: const TextStyle(color: const Color(0xFF00796b)),
     actions: [
       IconButton(
-          icon: toRemove
-              ? const Icon(Icons.delete, color: Colors.red)
-              : const Icon(Icons.done, color: Colors.green),
-          onPressed: () => Navigator.of(context).pop(true)),
+        icon: toRemove
+            ? const Icon(Icons.delete, color: Colors.red)
+            : const Icon(Icons.done, color: Colors.green),
+        onPressed: () => Get.back(result: true),
+      ),
       IconButton(
-          icon: const Icon(Icons.cancel),
-          color: Colors.grey,
-          onPressed: () => Navigator.of(context).pop(false))
+        icon: const Icon(Icons.cancel),
+        color: Colors.grey,
+        onPressed: () => Get.back(result: false),
+      )
     ],
   );
 }

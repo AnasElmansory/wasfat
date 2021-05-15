@@ -1,30 +1,22 @@
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:wasfat_akl/helper/internet_helper.dart';
-import 'package:wasfat_akl/models/dish.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wasfat_akl/firebase/categories_service.dart';
 import 'package:wasfat_akl/models/food_category.dart';
+import 'package:wasfat_akl/providers/dishes_provider.dart';
 
 class FoodCategoryProvider extends ChangeNotifier {
-  final FirebaseFirestore _firestore;
-  final InternetHelper _helper;
+  final CategoriesService _categoryService;
+  FoodCategoryProvider(this._categoryService);
 
-  FoodCategoryProvider(this._firestore, this._helper);
-  var foodCategories = Map<String, FoodCategory>();
-  var topCategories = <FoodCategory>[];
-  var dishesRecentlyAdded = <Dish>[];
-
-  List<T> shuffle<T>(List<T> items) {
-    var random = Random();
-
-    // Go through all elements.
-    for (var i = items.length - 1; i > 0; i--) {
-      // Pick a pseudorandom number according to the list length
-      var n = random.nextInt(i + 1);
-
-      var temp = items[i];
+  List<T> _shuffle<T>(List<T> items) {
+    final random = Random();
+    for (int i = items.length - 1; i > 0; i--) {
+      int n = random.nextInt(i + 1);
+      final temp = items[i];
       items[i] = items[n];
       items[n] = temp;
     }
@@ -32,47 +24,35 @@ class FoodCategoryProvider extends ChangeNotifier {
     return items;
   }
 
-  Future<void> getDishesByCategory(String categoryId) async {
-    final query = await _firestore
-        .collection('dishes')
-        .where('categoryId', arrayContains: categoryId)
-        .get(await _helper.internetValidation());
-    final categoryDishes =
-        query.docs.map<Dish>((dish) => Dish.fromMap(dish.data())).toList();
-    final shuffledCategoryDishes = shuffle<Dish>(categoryDishes);
-    foodCategories.update(
-        categoryId,
-        (foodCategory) =>
-            foodCategory.copyWith(dishes: shuffledCategoryDishes));
+  List<FoodCategory> _categories = [];
+  List<FoodCategory> get categories => this._categories;
+  List<FoodCategory> _topCategories = [];
+  List<FoodCategory> get topCategories => this._topCategories;
 
+  FoodCategory? getCategory(String categoryId) {
+    final dishesProvider = Get.context!.watch<DishesProvider>();
+    final findCategory =
+        this._categories.where((category) => category.id == categoryId);
+    if (findCategory.isNotEmpty) {
+      final category = findCategory.single;
+      return category.copyWith(dishes: dishesProvider.dishes[category.id]);
+    } else
+      return null;
+  }
+
+  Future<void> getFoodCategories() async {
+    final result = await _categoryService.getCategories();
+    final topCategories =
+        result.take(4).map((category) => category.id).toList();
+    await _setTopCategories(topCategories);
+    final shuffledCategories = _shuffle<FoodCategory>(result);
+    this._topCategories = shuffledCategories.take(3).toList();
+    this._categories = shuffledCategories;
     notifyListeners();
   }
 
-  Future<void> getFoodCategory() async {
-    final query = await _firestore
-        .collection('food_category')
-        .orderBy('priority')
-        .get(await _helper.internetValidation());
-    if (query.docs.isNotEmpty)
-      foodCategories.addEntries(query.docs.map((foodCategory) =>
-          MapEntry<String, FoodCategory>(foodCategory.data()['id'],
-              FoodCategory.fromMap(foodCategory.data()))));
-
-    topCategories = query.docs
-        .map((foodCategory) => FoodCategory.fromMap(foodCategory.data()))
-        .toList()
-          ..shuffle();
-    notifyListeners();
-  }
-
-  Future<void> getDishesRecentlyAdded() async {
-    final query = await _firestore
-        .collection('dishes')
-        .orderBy('addDate', descending: true)
-        .limit(5)
-        .get(await _helper.internetValidation());
-    dishesRecentlyAdded =
-        query.docs.map<Dish>((dish) => Dish.fromMap(dish.data())).toList();
-    notifyListeners();
+  Future<void> _setTopCategories(List<String> topCategories) async {
+    final shared = await SharedPreferences.getInstance();
+    await shared.setStringList('TopCategories', topCategories);
   }
 }

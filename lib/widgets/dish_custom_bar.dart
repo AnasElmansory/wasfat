@@ -1,8 +1,11 @@
-import 'package:wasfat_akl/providers/dish_actions_provider.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:get/get.dart';
+import 'package:wasfat_akl/providers/dishes_provider.dart';
+import 'package:wasfat_akl/providers/food_category_provider.dart';
+import 'package:wasfat_akl/widgets/cached_image.dart';
 import 'package:wasfat_akl/widgets/show_image_dialog.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:wasfat_akl/models/dish.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +13,7 @@ import 'package:flutter/material.dart';
 class DishCustomBar extends StatefulWidget {
   final Dish dish;
 
-  const DishCustomBar({Key key, this.dish}) : super(key: key);
+  const DishCustomBar({Key? key, required this.dish}) : super(key: key);
 
   @override
   _DishCustomBarState createState() => _DishCustomBarState();
@@ -18,27 +21,30 @@ class DishCustomBar extends StatefulWidget {
 
 class _DishCustomBarState extends State<DishCustomBar> {
   double _barHeight = 0.0;
-  Dish get _dish => widget.dish;
+  Dish get dish => widget.dish;
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final categoryProvider = context.watch<FoodCategoryProvider>();
+    final dishesProvider = context.watch<DishesProvider>();
     final auth = context.watch<Auth>();
-    final dishProvider = context.watch<DishProvider>();
+    final padding = context.mediaQueryPadding;
+    final size = context.mediaQuerySize;
+    final category = categoryProvider.getCategory(dish.categoryId.first);
+    final dishLikes = dishesProvider.oneDishLikes;
+    final dishLikesCount = dishLikes.length;
+    final isLiked = dishLikes.contains(auth.wasfatUser?.uid ?? '');
     return SliverAppBar(
-      backgroundColor:
-          (_barHeight == (kToolbarHeight + MediaQuery.of(context).padding.top))
-              ? Colors.amber[700]
-              : (_barHeight < 90)
-                  ? Colors.amber[500]
-                  : (_barHeight < 120)
-                      ? Colors.amber[300]
-                      : Colors.white70,
+      backgroundColor: (_barHeight == (kToolbarHeight + padding.top))
+          ? Colors.amber[700]
+          : (_barHeight < 90)
+          ? Colors.amber[500]
+          : (_barHeight < 120)
+          ? Colors.amber[300]
+          : Colors.white70,
       expandedHeight: size.height * 0.3,
-      title: Text(
-        (_barHeight == (kToolbarHeight + MediaQuery.of(context).padding.top))
-            ? _dish.name
-            : '',
+      title: AutoSizeText(
+        (_barHeight == (kToolbarHeight + padding.top)) ? dish.name : '',
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       pinned: true,
@@ -46,13 +52,15 @@ class _DishCustomBarState extends State<DishCustomBar> {
       flexibleSpace: InkWell(
         onTap: () async => await showDialog(
           context: context,
-          builder: (_) => ShowImageDialog(
-            photoUrl: _dish.dishImages.first,
-          ),
+          builder: (_) {
+            return ShowImageDialog(
+              photoUrl: dish.dishImages?.first ?? '',
+            );
+          },
         ),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>
+            WidgetsBinding.instance?.addPostFrameCallback((timeStamp) =>
                 setState(() => _barHeight = constraints.biggest.height));
             return FlexibleSpaceBar(
               background: Stack(children: [
@@ -63,15 +71,7 @@ class _DishCustomBarState extends State<DishCustomBar> {
                     borderRadius: const BorderRadius.only(
                       bottomLeft: const Radius.circular(100),
                     ),
-                    child: CachedNetworkImage(
-                      imageUrl: _dish.dishImages.first,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => const ImageIcon(
-                        const AssetImage('assets/transparent_logo.ico'),
-                        color: const Color(0xFFF5F5F5),
-                        size: 30,
-                      ),
-                    ),
+                    child: CachedImage(url: dish.dishImages?.first ?? ''),
                   ),
                 ),
                 Positioned(
@@ -87,21 +87,20 @@ class _DishCustomBarState extends State<DishCustomBar> {
                             IconButton(
                               icon: Icon(
                                 Icons.thumb_up,
-                                color: dishProvider.isLiked(auth.userId)
-                                    ? Colors.blue
-                                    : Colors.grey,
+                                color: isLiked ? Colors.blue : Colors.grey,
                               ),
-                              onPressed: () async =>
-                                  await dishProvider.likeDish(
-                                auth.userId,
-                                auth,
-                                context,
-                              ),
+                              onPressed: () async {
+                                if (isLiked)
+                                  await dishesProvider.unlikeDish(dish.id);
+                                else
+                                  await dishesProvider.likeDish(dish.id);
+                              },
                             ),
                             const SizedBox(width: 4.0),
-                            Text(intl.NumberFormat.compact().format(
-                              dishProvider.dish.likesCount ?? 0,
-                            )),
+                            Text(
+                              intl.NumberFormat.compact()
+                                  .format(dishLikesCount),
+                            ),
                           ],
                         ),
                       ),
@@ -119,7 +118,7 @@ class _DishCustomBarState extends State<DishCustomBar> {
                             child: Row(
                               children: [
                                 Text(
-                                  dishProvider.getOneDishRating().toString(),
+                                  _getRatingValue(dish.rating),
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
@@ -135,7 +134,7 @@ class _DishCustomBarState extends State<DishCustomBar> {
                                 Expanded(
                                   flex: 3,
                                   child: Text(
-                                    _dish.name,
+                                    dish.name,
                                     textDirection: TextDirection.rtl,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
@@ -160,4 +159,11 @@ class _DishCustomBarState extends State<DishCustomBar> {
       ),
     );
   }
+}
+
+String _getRatingValue(Map<String, int>? rating) {
+  if (rating?.isEmpty ?? true) return '0';
+  final sum = rating!.values.reduce((valueF, valueL) => valueF + valueL);
+  final average = (sum / rating.values.length).toPrecision(1);
+  return average.toString();
 }

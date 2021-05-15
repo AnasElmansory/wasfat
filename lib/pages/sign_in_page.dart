@@ -1,9 +1,9 @@
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:wasfat_akl/get_it.dart';
+import 'package:get/get.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:wasfat_akl/utils/internet_helper.dart';
 
 typedef Sign = Future<void> Function();
 
@@ -12,9 +12,19 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final checker = getIt<DataConnectionChecker>();
-    final size = MediaQuery.of(context).size;
+    final size = context.mediaQuerySize;
     final auth = context.watch<Auth>();
+
+    Future<void> signWithGoogle() async {
+      await auth.signInWithGoogle();
+      if (await auth.isLoggedIn()) Get.back();
+    }
+
+    Future<void> signWithFacebook() async {
+      await auth.signInWithFacebook();
+      if (await auth.isLoggedIn()) Get.back();
+    }
+
     return Scaffold(
       appBar: AppBar(elevation: 0),
       backgroundColor: Colors.amber[700],
@@ -55,20 +65,15 @@ class SignInPage extends StatelessWidget {
               SignInButton(
                 Buttons.Google,
                 onPressed: () async {
-                  final Sign signMethod =
-                      () async => await auth.signInWithGoogle().then((_) async {
-                            if (context.read<Auth>().isLoggedIn)
-                              Navigator.of(context).pop();
-                          });
-                  if (!await checker.hasConnection)
+                  if (!await isConnected())
                     return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       action: SnackBarAction(
                           label: 'حاول مره أخرى',
-                          onPressed: () async => await signMethod()),
+                          onPressed: () async => await signWithGoogle()),
                       content: const Text('تأكد من اتصالك باللانترنت'),
                     ));
                   else
-                    await signMethod();
+                    await signWithGoogle();
                 },
                 shape: const RoundedRectangleBorder(
                   borderRadius:
@@ -81,21 +86,15 @@ class SignInPage extends StatelessWidget {
               SignInButton(
                 Buttons.Facebook,
                 onPressed: () async {
-                  final Sign signMethod = () async {
-                    await auth.signInWithFacebook().then((_) async {
-                      if (context.read<Auth>().isLoggedIn)
-                        Navigator.of(context).pop();
-                    });
-                  };
-                  if (!await checker.hasConnection)
+                  if (!await isConnected())
                     return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       action: SnackBarAction(
                           label: 'حاول مره أخرى',
-                          onPressed: () async => await signMethod()),
+                          onPressed: () async => await signWithFacebook()),
                       content: const Text('تأكد من اتصالك باللانترنت'),
                     ));
                   else
-                    await signMethod();
+                    await signWithFacebook();
                 },
                 shape: const RoundedRectangleBorder(
                   borderRadius:

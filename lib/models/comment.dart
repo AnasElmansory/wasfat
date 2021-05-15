@@ -7,33 +7,33 @@ class Comment {
   final String dishId;
   final String ownerId;
   final String ownerName;
-  final String ownerPhotoURL;
+  final String? ownerPhotoURL;
   final String content;
   final DateTime commentDate;
   final int likes;
   final List<String> usersLikes;
-  Comment({
-    this.id,
-    this.dishId,
-    this.ownerId,
-    this.ownerName,
+  const Comment({
+    required this.id,
+    required this.dishId,
+    required this.ownerId,
+    required this.ownerName,
+    required this.content,
+    required this.commentDate,
     this.ownerPhotoURL,
-    this.content,
-    this.commentDate,
     this.likes = 0,
     this.usersLikes = const <String>[],
   });
 
   Comment copyWith({
-    String id,
-    String dishId,
-    String ownerId,
-    String ownerName,
-    String ownerPhotoURL,
-    String content,
-    DateTime commentDate,
-    int likes,
-    List<String> usersLikes,
+    String? id,
+    String? dishId,
+    String? ownerId,
+    String? ownerName,
+    String? ownerPhotoURL,
+    String? content,
+    DateTime? commentDate,
+    int? likes,
+    List<String>? usersLikes,
   }) {
     return Comment(
       id: id ?? this.id,
@@ -56,15 +56,13 @@ class Comment {
       'ownerName': ownerName,
       'ownerPhotoURL': ownerPhotoURL,
       'content': content,
-      'commentDate': commentDate?.millisecondsSinceEpoch,
+      'commentDate': commentDate.millisecondsSinceEpoch,
       'likes': likes,
       'usersLikes': usersLikes,
     };
   }
 
   factory Comment.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return Comment(
       id: map['id'],
       dishId: map['dishId'],
@@ -89,19 +87,13 @@ class Comment {
   }
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
 
-    return o is Comment &&
-        o.id == id &&
-        o.dishId == dishId &&
-        o.ownerId == ownerId &&
-        o.ownerName == ownerName &&
-        o.ownerPhotoURL == ownerPhotoURL &&
-        o.content == content &&
-        o.commentDate == commentDate &&
-        o.likes == likes &&
-        listEquals(o.usersLikes, usersLikes);
+    return other is Comment &&
+        other.id == id &&
+        other.dishId == dishId &&
+        other.ownerId == ownerId;
   }
 
   @override

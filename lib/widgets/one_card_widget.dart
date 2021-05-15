@@ -1,22 +1,20 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wasfat_akl/widgets/cached_image.dart';
 
 class OneCardWidget extends StatelessWidget {
   final String name;
   final String imageUrl;
-
   final Size size;
   final Color textBackgroundColor;
   final Color textColor;
   static const Color mTextBackgroundColor = Color.fromRGBO(129, 129, 129, 0.6);
 
   OneCardWidget({
-    this.name,
-    this.imageUrl,
-    this.size,
+    required this.name,
+    required this.imageUrl,
+    required this.size,
     this.textBackgroundColor = mTextBackgroundColor,
-    this.textColor,
+    required this.textColor,
   });
 
   @override
@@ -31,19 +29,10 @@ class OneCardWidget extends StatelessWidget {
           child: Stack(
             children: [
               Positioned(
-                  height: size.height,
-                  width: size.width,
-                  child: CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.fill,
-                    placeholder: (context, url) {
-                      return ImageIcon(
-                        const AssetImage('assets/transparent_logo.ico'),
-                        size: 30,
-                        color: Colors.grey[200],
-                      );
-                    },
-                  )),
+                height: size.height,
+                width: size.width,
+                child: CachedImage(url: imageUrl),
+              ),
               Positioned(
                 bottom: 0,
                 child: Container(

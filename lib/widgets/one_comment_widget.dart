@@ -1,28 +1,33 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:date_format/date_format.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wasfat_akl/models/comment.dart';
-import 'package:wasfat_akl/pages/sign_in_page.dart';
+import 'package:wasfat_akl/models/dish.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
-import 'package:wasfat_akl/providers/dish_actions_provider.dart';
+import 'package:wasfat_akl/providers/dish_comments_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:wasfat_akl/utils/navigation.dart';
 
 class OneCommentWidget extends StatelessWidget {
   final Comment comment;
-
-  const OneCommentWidget({Key key, this.comment}) : super(key: key);
+  final Dish dish;
+  const OneCommentWidget({Key? key, required this.comment, required this.dish})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final dishProvider = context.watch<DishProvider>();
+    final commentProvider = context.watch<DishCommentProvider>();
     final auth = context.watch<Auth>();
+    final rating = dish.rating;
+    final hasRated = dish.rating.containsKey(comment.ownerId);
+    final isLiked = comment.usersLikes.contains(auth.wasfatUser?.uid);
     return ExpansionTileCard(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (dishProvider.dish.rating.containsKey(comment.ownerId))
-              Text(dishProvider.dish.rating[comment.ownerId].toString() ?? ''),
-            if (dishProvider.dish.rating.containsKey(comment.ownerId))
+            if (hasRated) Text(rating[comment.ownerId].toString()),
+            if (hasRated)
               const Icon(
                 Icons.star,
                 color: Colors.amber,
@@ -41,24 +46,18 @@ class OneCommentWidget extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           textDirection: TextDirection.rtl,
         ),
-        leading: Text(formatDate(
-          comment.commentDate,
-          [hh, ':', nn],
-        )),
-        trailing: CircleAvatar(
-          backgroundColor: const Color(0xFF00695C),
-          child: comment.ownerPhotoURL == null
-              ? const Icon(
-                  Icons.account_circle,
-                  color: Colors.white,
-                  size: 40,
-                )
-              : null,
-          backgroundImage: comment.ownerPhotoURL != null
-              ? CachedNetworkImageProvider(
-                  comment.ownerPhotoURL,
-                )
-              : null,
+        leading: Text(
+          formatDate(
+            comment.commentDate,
+            [hh, ':', nn],
+          ),
+        ),
+        trailing: CircularProfileAvatar(
+          comment.ownerPhotoURL ?? '',
+          initialsText:
+              Text('${comment.ownerName.capitalizeFirst?[0] ?? 'User'}'),
+          borderColor: Colors.teal,
+          borderWidth: 2,
         ),
         children: [
           ListTile(
@@ -71,24 +70,14 @@ class OneCommentWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 2),
               icon: Icon(
                 Icons.thumb_up,
-                color: comment.usersLikes.contains(auth.userId)
-                    ? Colors.blue
-                    : Colors.grey,
+                color: isLiked ? Colors.blue : Colors.grey,
               ),
               onPressed: () async {
-                final alreadyLiked = comment.usersLikes.contains(auth.userId);
-                if (auth.userId == null)
-                  return Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (_) => SignInPage()));
-                alreadyLiked
-                    ? await dishProvider.dislikeAComment(
-                        comment,
-                        auth.userId,
-                      )
-                    : await dishProvider.likeAComment(
-                        comment,
-                        auth.userId,
-                      );
+                if (!await auth.isLoggedIn()) return await navigateToSignPage();
+                if (isLiked)
+                  await commentProvider.unlikeComment(comment.id);
+                else
+                  await commentProvider.likeComment(comment.id);
               },
             ),
           ),

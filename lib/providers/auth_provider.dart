@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wasfat_akl/models/user.dart';
 
 class Auth extends ChangeNotifier {
@@ -19,13 +20,16 @@ class Auth extends ChangeNotifier {
     this._firestore,
   );
 
-  WasfatUser wasfatUser;
+  WasfatUser? wasfatUser;
 
-  bool get isLoggedIn => (_firebaseAuth.currentUser == null) ? false : true;
-  String get userId => _firebaseAuth.currentUser?.uid;
-  Future<String> getAccessToken() async {
-    final auth = await _googleSignIn.currentUser.authentication;
-    return auth?.accessToken;
+  bool _isSignedIn = false;
+  bool get isSignedIn => this._isSignedIn;
+
+  Future<bool> isLoggedIn() async {
+    final shared = await SharedPreferences.getInstance();
+    final _isLoggedIn = shared.getBool('isLoggedIn') ?? false;
+    final isUser = _firebaseAuth.currentUser != null;
+    return _isLoggedIn && isUser ? true : false;
   }
 
   Future<void> signOut() async {
@@ -37,12 +41,14 @@ class Auth extends ChangeNotifier {
   }
 
   Future<void> getUserData() async {
-    if (isLoggedIn) {
-      final userSnapshot = await _firestore
+    if (await isLoggedIn()) {
+      final userData = await _firestore
           .collection('users')
-          .doc(_firebaseAuth.currentUser.uid)
+          .doc(_firebaseAuth.currentUser!.uid)
           .get();
-      wasfatUser = WasfatUser.fromMap(userSnapshot.data());
+      if (userData.data() == null) return;
+      wasfatUser = WasfatUser.fromMap(userData.data()!);
+      this._isSignedIn = true;
       notifyListeners();
     }
   }
@@ -57,8 +63,8 @@ class Auth extends ChangeNotifier {
     });
     wasfatUser = WasfatUser(
       uid: user.uid,
-      email: user.email,
-      name: user.displayName,
+      displayName: user.displayName ?? 'User',
+      email: user.email ?? 'User@email.com',
       photoURL: user.photoURL,
       phoneNumber: user.phoneNumber,
     );
@@ -67,23 +73,49 @@ class Auth extends ChangeNotifier {
 
   Future<void> signInWithGoogle() async {
     final account = await _googleSignIn.signIn();
-    if (account == null)
-      return await Fluttertoast.showToast(msg: 'sign in failed');
+    if (account == null) {
+      await Fluttertoast.showToast(msg: GoogleSignIn.kSignInCanceledError);
+      return;
+    }
     final auth = await account.authentication;
     final credential = GoogleAuthProvider.credential(
-        idToken: auth.idToken, accessToken: auth.accessToken);
+      idToken: auth.idToken,
+      accessToken: auth.accessToken,
+    );
     final userCredential = await _firebaseAuth.signInWithCredential(credential);
-    await saveUserData(userCredential.user);
+    if (userCredential.user == null) {
+      await Fluttertoast.showToast(msg: GoogleSignIn.kSignInFailedError);
+      return;
+    }
+    await saveUserData(userCredential.user!);
+    final shared = await SharedPreferences.getInstance();
+    await shared.setBool('isLoggedIn', true);
+    this._isSignedIn = true;
     notifyListeners();
   }
 
   Future<void> signInWithFacebook() async {
-    final accessToken = await _facebookAuth.login();
-    if (accessToken == null)
-      return await Fluttertoast.showToast(msg: 'sign in failed');
-    final credential = FacebookAuthProvider.credential(accessToken.token);
+    final loginResult = await _facebookAuth.login();
+
+    Future<void> _loginFailed() async {
+      await Fluttertoast.showToast(msg: FacebookAuthErrorCode.FAILED);
+      return;
+    }
+
+    if (loginResult.status == LoginStatus.cancelled) {
+      await Fluttertoast.showToast(msg: FacebookAuthErrorCode.CANCELLED);
+      return;
+    } else if (loginResult.status == LoginStatus.failed) await _loginFailed();
+
+    final accessToken = loginResult.accessToken;
+    if (accessToken == null) await _loginFailed();
+    final credential = FacebookAuthProvider.credential(accessToken!.token);
     final userCredential = await _firebaseAuth.signInWithCredential(credential);
-    await saveUserData(userCredential.user);
+    if (userCredential.user == null) await _loginFailed();
+    await saveUserData(userCredential.user!);
+    final shared = await SharedPreferences.getInstance();
+    await shared.setBool('isLoggedIn', true);
+    this._isSignedIn = true;
     notifyListeners();
   }
 }

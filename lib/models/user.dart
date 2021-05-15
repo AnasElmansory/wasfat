@@ -2,29 +2,29 @@ import 'dart:convert';
 
 class WasfatUser {
   final String uid;
-  final String name;
+  final String displayName;
   final String email;
-  final String photoURL;
-  final String phoneNumber;
+  final String? photoURL;
+  final String? phoneNumber;
 
   WasfatUser({
-    this.uid,
-    this.name,
-    this.email,
+    required this.uid,
+    required this.displayName,
+    required this.email,
     this.photoURL,
     this.phoneNumber,
   });
 
   WasfatUser copyWith({
-    String uid,
-    String name,
-    String email,
-    String photoURL,
-    String phoneNumber,
+    String? uid,
+    String? displayName,
+    String? email,
+    String? photoURL,
+    String? phoneNumber,
   }) {
     return WasfatUser(
       uid: uid ?? this.uid,
-      name: name ?? this.name,
+      displayName: displayName ?? this.displayName,
       email: email ?? this.email,
       photoURL: photoURL ?? this.photoURL,
       phoneNumber: phoneNumber ?? this.phoneNumber,
@@ -34,7 +34,7 @@ class WasfatUser {
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,
-      'name': name,
+      'displayName': displayName,
       'email': email,
       'photoURL': photoURL,
       'phoneNumber': phoneNumber,
@@ -42,11 +42,9 @@ class WasfatUser {
   }
 
   factory WasfatUser.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return WasfatUser(
       uid: map['uid'],
-      name: map['displayName'],
+      displayName: map['displayName'],
       email: map['email'],
       photoURL: map['photoURL'],
       phoneNumber: map['phoneNumber'],
@@ -60,25 +58,25 @@ class WasfatUser {
 
   @override
   String toString() {
-    return 'WasfatUser(uid: $uid, name: $name, email: $email, photoURL: $photoURL, phoneNumber: $phoneNumber)';
+    return 'WasfatUser(uid: $uid, displayName: $displayName, email: $email, photoURL: $photoURL, phoneNumber: $phoneNumber)';
   }
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
 
-    return o is WasfatUser &&
-        o.uid == uid &&
-        o.name == name &&
-        o.email == email &&
-        o.photoURL == photoURL &&
-        o.phoneNumber == phoneNumber;
+    return other is WasfatUser &&
+        other.uid == uid &&
+        other.displayName == displayName &&
+        other.email == email &&
+        other.photoURL == photoURL &&
+        other.phoneNumber == phoneNumber;
   }
 
   @override
   int get hashCode {
     return uid.hashCode ^
-        name.hashCode ^
+        displayName.hashCode ^
         email.hashCode ^
         photoURL.hashCode ^
         phoneNumber.hashCode;
