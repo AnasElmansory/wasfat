@@ -105,13 +105,14 @@ class Auth extends ChangeNotifier {
     if (loginResult.status == LoginStatus.cancelled) {
       await Fluttertoast.showToast(msg: FacebookAuthErrorCode.CANCELLED);
       return;
-    } else if (loginResult.status == LoginStatus.failed) await _loginFailed();
+    } else if (loginResult.status == LoginStatus.failed)
+      return await _loginFailed();
 
     final accessToken = loginResult.accessToken;
-    if (accessToken == null) await _loginFailed();
-    final credential = FacebookAuthProvider.credential(accessToken!.token);
+    if (accessToken == null) return await _loginFailed();
+    final credential = FacebookAuthProvider.credential(accessToken.token);
     final userCredential = await _firebaseAuth.signInWithCredential(credential);
-    if (userCredential.user == null) await _loginFailed();
+    if (userCredential.user == null) return await _loginFailed();
     await saveUserData(userCredential.user!);
     final shared = await SharedPreferences.getInstance();
     await shared.setBool('isLoggedIn', true);

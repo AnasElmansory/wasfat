@@ -43,7 +43,7 @@ class FoodCategoryProvider extends ChangeNotifier {
   Future<void> getFoodCategories() async {
     final result = await _categoryService.getCategories();
     final topCategories =
-        result.take(4).map((category) => category.id).toList();
+        result.take(5).map((category) => category.id).toList();
     await _setTopCategories(topCategories);
     final shuffledCategories = _shuffle<FoodCategory>(result);
     this._topCategories = shuffledCategories.take(3).toList();

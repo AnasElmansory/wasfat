@@ -48,23 +48,16 @@ class CommentService {
   }
 
   Stream<List<Comment>> listenToDishComments(String dishId) async* {
-    yield* commentQuery(dishId)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map<Comment>((comment) => Comment.fromMap(comment.data()))
-            .toList())
-        .asBroadcastStream();
+    yield* commentQuery(dishId).snapshots().map((snapshot) => snapshot.docs
+        .map<Comment>((comment) => Comment.fromMap(comment.data()))
+        .toList());
   }
 
   Stream<List<Comment>> listenToTopTwoComments(String dishId) async* {
-    final query = commentQuery(dishId)
-        .limit(2)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((comment) => Comment.fromMap(comment.data()))
-            .toList())
-        .asBroadcastStream();
-    yield* query;
+    yield* commentQuery(dishId).limit(2).snapshots().map((snapshot) => snapshot
+        .docs
+        .map((comment) => Comment.fromMap(comment.data()))
+        .toList());
   }
 
   Future<void> likeComment(String commentId, String userId) async {

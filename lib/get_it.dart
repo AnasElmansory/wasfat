@@ -7,6 +7,7 @@ import 'package:package_info/package_info.dart';
 import 'package:wasfat_akl/firebase/categories_service.dart';
 import 'package:wasfat_akl/firebase/comment_service.dart';
 import 'package:wasfat_akl/firebase/dishes_service.dart';
+import 'package:wasfat_akl/providers/ad_provider.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:wasfat_akl/providers/dish_comments_provider.dart';
 import 'package:wasfat_akl/providers/dishes_provider.dart';
@@ -19,6 +20,7 @@ void init() {
   getIt.registerFactory<FoodCategoryProvider>(() => FoodCategoryProvider(
         getIt<CategoriesService>(),
       ));
+  getIt.registerFactory<Ads>(() => Ads());
 
   getIt.registerFactory<DishesProvider>(
       () => DishesProvider(getIt<DishesService>()));

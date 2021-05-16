@@ -58,7 +58,7 @@ class DishCommentProvider extends ChangeNotifier {
     _topTwoCommentSubscription = null;
     _topTwoCommentSubscription = _commentService
         .listenToTopTwoComments(dishId)
-        .listen((comments) => topTwoComments = comments);
+        .listen((values) => topTwoComments = values);
   }
 
   void listenToDishComments(String dishId) async {
@@ -75,7 +75,7 @@ class DishCommentProvider extends ChangeNotifier {
     Map<String, int> rating,
   ) async {
     final auth = Get.context!.read<Auth>();
-    if (!await auth.isLoggedIn()) return await navigateToSignPage();
+    if (!await auth.isLoggedIn()) return await navigateToSignPageUntil();
     Comment _comment;
     if (content.isEmpty && content.length > 1500) return;
     _comment = Comment(

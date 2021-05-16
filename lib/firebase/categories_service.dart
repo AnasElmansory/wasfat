@@ -11,9 +11,9 @@ class CategoriesService {
         .collection('food_category')
         .orderBy('priority')
         .get(await internetValidation());
-    final categories = query.docs
-        .map<FoodCategory>((category) => FoodCategory.fromMap(category.data()))
-        .toList();
+    final categories = query.docs.map<FoodCategory>((category) {
+      return FoodCategory.fromMap(category.data());
+    }).toList();
     return categories;
   }
 }

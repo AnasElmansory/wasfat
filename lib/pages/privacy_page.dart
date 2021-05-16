@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wasfat_akl/utils/constants.dart';
 
 class PrivacyPage extends StatelessWidget {
@@ -12,10 +13,9 @@ class PrivacyPage extends StatelessWidget {
         child: Html(
           data: privacy,
           onLinkTap: (url, _context, map, element) async {
-            print(url);
-            print(_context);
-            print(map);
-            print(element);
+            final _canLaunch = await canLaunch(url ?? '');
+            if (!_canLaunch) return;
+            await launch(url!);
           },
         ),
       ),

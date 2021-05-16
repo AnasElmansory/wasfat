@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 
 class CachedImage extends StatelessWidget {
   final String url;
-  const CachedImage({Key? key, required this.url}) : super(key: key);
+  final BoxFit? fit;
+  const CachedImage({Key? key, required this.url, this.fit}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
         imageUrl: url,
-        fit: BoxFit.cover,
+        fit: fit ?? BoxFit.cover,
         placeholder: (context, url) {
           return Image.asset(
             'assets/placeholder.png',

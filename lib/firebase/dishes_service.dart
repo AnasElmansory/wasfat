@@ -12,21 +12,19 @@ class DishesService {
 
   Future<List<Dish>> getDishesRecentlyAdded(List<String> categoriesId) async {
     List<Dish> dishes = [];
-    late Query<Map<String, dynamic>> query;
-    if (categoriesId.isNotEmpty)
-      query = _firestore
+    Future<Dish> getOneDishFromCategory(String categoryId) async {
+      final query = await _firestore
           .collection('dishes')
           .orderBy('addDate', descending: true)
-          .where('categoryId', arrayContainsAny: categoriesId)
-          .limit(5);
-    else
-      query = _firestore
-          .collection('dishes')
-          .orderBy('addDate', descending: true)
-          .limit(5);
-    final result = await query.get(await internetValidation());
-    dishes =
-        result.docs.map<Dish>((dish) => Dish.fromMap(dish.data())).toList();
+          .where('categoryId', arrayContains: categoryId)
+          .limit(1)
+          .get();
+      return Dish.fromMap(query.docs.single.data());
+    }
+
+    dishes = await Future.wait<Dish>(
+      categoriesId.map((category) => getOneDishFromCategory(category)),
+    );
     return dishes;
   }
 
@@ -35,14 +33,21 @@ class DishesService {
     int pageToken,
   ) async {
     List<Dish> dishes = [];
-    final query = _firestore
+    final mainQuery = _firestore
         .collection('dishes')
         .where('categoryId', arrayContains: categoryId)
-        .orderBy('addDate', descending: true)
-        .startAfter([pageToken]).limit(10);
-    final result = await query.get(await internetValidation());
-    dishes =
-        result.docs.map<Dish>((dish) => Dish.fromMap(dish.data())).toList();
+        .orderBy('addDate', descending: true);
+    late Query<Map<String, dynamic>> query;
+    if (pageToken == 0)
+      query = mainQuery;
+    else
+      query = mainQuery.startAfter([pageToken]);
+    final result = await query.limit(10).get(await internetValidation());
+    print(result.docs.length);
+    dishes = result.docs.map<Dish>((dish) {
+      print(dish.data()['dishDescription']);
+      return Dish.fromMap(dish.data());
+    }).toList();
     return dishes;
   }
 

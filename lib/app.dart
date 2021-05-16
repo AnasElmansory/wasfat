@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:wasfat_akl/get_it.dart';
+import 'package:wasfat_akl/providers/ad_provider.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:wasfat_akl/providers/dish_comments_provider.dart';
 import 'package:wasfat_akl/providers/dishes_provider.dart';
+import 'package:wasfat_akl/providers/expand_comment_provider.dart';
 import 'package:wasfat_akl/providers/food_category_provider.dart';
 import 'package:wasfat_akl/providers/dishes_preferences.dart';
 
@@ -18,6 +20,7 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => getIt<Auth>()..getUserData()),
+        ChangeNotifierProvider(create: (_) => ExpandCommentProvider()),
         ChangeNotifierProvider(
             create: (_) => getIt<FoodCategoryProvider>()..getFoodCategories()),
         ChangeNotifierProvider(
