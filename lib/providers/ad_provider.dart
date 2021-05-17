@@ -1,88 +1,36 @@
-import 'package:flutter/cupertino.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flutter/material.dart';
+import 'package:native_admob_flutter/native_admob_flutter.dart';
 
-// const _bannerUnitIdTest = 'ca-app-pub-3940256099942544/6300978111';
-// const _interstitialUnitIdTest = 'ca-app-pub-3940256099942544/1033173712';
-
-class Ads extends ChangeNotifier {
-  InterstitialAd? _interstitialAd;
-  BannerAd? bannerAd;
-
-  bool _isBannerAdLoaded = false;
-  bool get isBannerAdLoaded => this._isBannerAdLoaded;
-  set isBannerAdLoaded(bool value) {
-    this._isBannerAdLoaded = value;
+class AdmobProvider extends ChangeNotifier {
+  int _interstitialCounter = 0;
+  int get interstitialCounter => this._interstitialCounter;
+  set interstitialCounter(int value) {
+    this._interstitialCounter = value;
     notifyListeners();
   }
 
-  static const bannerAdHeight = 60;
-
-  BannerAd loadBannerAd(int width) {
-    final adSize = AdSize(
-      width: width,
-      height: bannerAdHeight,
-    );
-    final bannerAdListener = AdListener(
-      onAdLoaded: (ad) async {
-        final isLoaded = await ad.isLoaded();
-        isBannerAdLoaded = isLoaded;
-      },
-      onAdFailedToLoad: (ad, error) async {
-        print(error.message);
-      },
-      onAdOpened: (ad) {
-        print('adopened');
-      },
-      onAdClosed: (ad) {
-        print('adclosed');
-      },
-    );
-
-    bannerAd = BannerAd(
-      adUnitId: BannerAd.testAdUnitId,
-      size: adSize,
-      request: const AdRequest(),
-      listener: bannerAdListener,
-    );
-    bannerAd!.load();
-    return bannerAd!;
+  AdmobProvider() {
+    initIntersitial();
+    this.addListener(() {
+      if (this._interstitialCounter == 5) {
+        if (this._interstitialAd.isLoaded) this._interstitialAd.show();
+        this._interstitialCounter = 0;
+      }
+    });
   }
 
-  InterstitialAd loadInterstitialAd() {
-    final interstitialAdListener = AdListener(
-      onAdLoaded: (ad) async {
-        final isLoaded = await ad.isLoaded();
-        if (isLoaded) _interstitialAd?.show();
-      },
-      onAdFailedToLoad: (ad, error) async {
-        print(error.message);
-      },
-      onAdOpened: (ad) async {
-        print('adopened');
-      },
-      onAdClosed: (ad) async {
-        print('adclosed');
-      },
-    );
-    _interstitialAd = InterstitialAd(
-      adUnitId: InterstitialAd.testAdUnitId,
-      request: const AdRequest(),
-      listener: interstitialAdListener,
-    );
-    _interstitialAd!.load();
-    notifyListeners();
-    return _interstitialAd!;
-  }
+  void userNavigate() => this._interstitialCounter++;
 
-  void disposeBanner() {
-    bannerAd?.dispose();
-    bannerAd = null;
+  final _interstitialAd = InterstitialAd(unitId: InterstitialAd.testUnitId);
+  InterstitialAd get interstitialAd => this._interstitialAd;
+  Future<void> initIntersitial() async {
+    _interstitialAd.init();
+    await _interstitialAd.load();
   }
 
   @override
   void dispose() {
-    _interstitialAd?.dispose();
-    bannerAd?.dispose();
+    this._interstitialAd.dispose();
     super.dispose();
   }
 }

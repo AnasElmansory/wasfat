@@ -20,6 +20,7 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => getIt<Auth>()..getUserData()),
+        ChangeNotifierProvider(create: (_) => getIt<AdmobProvider>()),
         ChangeNotifierProvider(create: (_) => ExpandCommentProvider()),
         ChangeNotifierProvider(
             create: (_) => getIt<FoodCategoryProvider>()..getFoodCategories()),

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:wasfat_akl/models/dish.dart';
+import 'package:wasfat_akl/providers/ad_provider.dart';
 
 import 'package:wasfat_akl/providers/dishes_provider.dart';
 import 'package:wasfat_akl/providers/food_category_provider.dart';
+import 'package:wasfat_akl/utils/ad_widget.dart';
+import 'package:wasfat_akl/widgets/ads/banner_widget.dart';
+import 'package:wasfat_akl/widgets/ads/native_ad_widget.dart';
 import 'package:wasfat_akl/widgets/category_widgets/category_custom_bar.dart';
 import 'package:wasfat_akl/widgets/dish_widgets/dish_tile.dart';
 
@@ -46,14 +51,27 @@ class _FoodCategoryPageState extends State<FoodCategoryPage>
     final category = categoryProvider.getCategory(widget.foodCategoryId)!;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
+      body: AdWidget(
+        pageWidgets: [
           CategoryCustomBar(category: category),
           PagedSliverList(
             pagingController: dishesProvider.getPagingController(category.id),
             builderDelegate: PagedChildBuilderDelegate<Dish>(
               itemBuilder: (context, dish, index) {
-                return DishTile(dish: dish, animation: _controller);
+                final size = context.mediaQuerySize;
+                final isAdIndex = index % 5 == 0;
+                return Container(
+                  child: Column(
+                    children: [
+                      if (isAdIndex)
+                        Container(
+                          height: size.height * .2,
+                          child: const NativeAdWidget(),
+                        ),
+                      DishTile(dish: dish, animation: _controller),
+                    ],
+                  ),
+                );
               },
             ),
           ),

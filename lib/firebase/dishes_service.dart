@@ -43,9 +43,7 @@ class DishesService {
     else
       query = mainQuery.startAfter([pageToken]);
     final result = await query.limit(10).get(await internetValidation());
-    print(result.docs.length);
     dishes = result.docs.map<Dish>((dish) {
-      print(dish.data()['dishDescription']);
       return Dish.fromMap(dish.data());
     }).toList();
     return dishes;

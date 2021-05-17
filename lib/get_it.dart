@@ -20,7 +20,7 @@ void init() {
   getIt.registerFactory<FoodCategoryProvider>(() => FoodCategoryProvider(
         getIt<CategoriesService>(),
       ));
-  getIt.registerFactory<Ads>(() => Ads());
+  getIt.registerFactory<AdmobProvider>(() => AdmobProvider());
 
   getIt.registerFactory<DishesProvider>(
       () => DishesProvider(getIt<DishesService>()));

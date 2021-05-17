@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:native_admob_flutter/native_admob_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:wasfat_akl/get_it.dart';
 import 'package:wasfat_akl/providers/ad_provider.dart';
@@ -32,120 +32,96 @@ class HomePage extends StatelessWidget {
     final preferences = context.watch<DishesPreferencesProvider>();
     final size = context.mediaQuerySize;
     checkConnectionAndFirstTimeToApp(context);
-    return ChangeNotifierProvider(
-      create: (_) => getIt<Ads>(),
-      builder: (context, child) {
-        final ads = context.watch<Ads>();
-        // ads.loadInterstitialAd();
-        return Scaffold(
-          drawer: const HomeDrawer(),
-          appBar: AppBar(
-            title: const Text(
-              'وصفات',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            elevation: 0,
+
+    return Scaffold(
+      drawer: const HomeDrawer(),
+      appBar: AppBar(
+        title: const Text(
+          'وصفات',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
           ),
-          body: Container(
-            height: size.height,
-            child: LiquidPullToRefresh(
-              onRefresh: () async {
-                await foodProvider.getFoodCategories();
-                await dishesProvider.getDishesRecentlyAdded();
-              },
-              backgroundColor: Colors.white,
-              color: const Color(0xFFFFA000),
-              child: Stack(
+        ),
+        elevation: 0,
+      ),
+      body: Container(
+        height: size.height,
+        child: LiquidPullToRefresh(
+          onRefresh: () async {
+            await foodProvider.getFoodCategories();
+            await dishesProvider.getDishesRecentlyAdded();
+          },
+          backgroundColor: Colors.white,
+          color: const Color(0xFFFFA000),
+          child: SingleChildScrollView(
+            child: Container(
+              child: Column(
                 children: [
-                  Positioned.fill(
-                    child: SingleChildScrollView(
-                      child: Container(
-                        child: Column(
-                          children: [
-                            const DividerWidget(
-                                dividerName: "أطباق جديدة", marginTop: 18),
-                            Container(
-                              child: ChangeNotifierProvider(
-                                create: (_) => SliderIndicatorProvider(),
-                                builder: (context, _) {
-                                  final recentDishesExist = dishesProvider
-                                      .recentlyAddedDishes.isNotEmpty;
-                                  final categoriesExists =
-                                      foodProvider.categories.isNotEmpty;
-                                  if (!recentDishesExist || !categoriesExists)
-                                    return Container(
-                                      // 18 to compensate sizedbox and indicators heights till i find another way :)
-                                      height: (size.height * 0.3) + 18,
-                                      width: size.width * 0.8,
-                                      child: const Center(
-                                        child: const SpinKitThreeBounce(
-                                          size: 30,
-                                          color: Colors.amber,
-                                        ),
-                                      ),
-                                    );
-                                  else
-                                    return Column(
-                                      children: [
-                                        const SlideShow(),
-                                        const SizedBox(height: 8),
-                                        const SlideShowIndicator(),
-                                      ],
-                                    );
-                                },
+                  const DividerWidget(
+                      dividerName: "أطباق جديدة", marginTop: 18),
+                  Container(
+                    child: ChangeNotifierProvider(
+                      create: (_) => SliderIndicatorProvider(),
+                      builder: (context, _) {
+                        final recentDishesExist =
+                            dishesProvider.recentlyAddedDishes.isNotEmpty;
+                        final categoriesExists =
+                            foodProvider.categories.isNotEmpty;
+                        if (!recentDishesExist || !categoriesExists)
+                          return Container(
+                            // 18 to compensate sizedbox and indicators heights till i find another way :)
+                            height: (size.height * 0.3) + 18,
+                            width: size.width * 0.8,
+                            child: const Center(
+                              child: const SpinKitThreeBounce(
+                                size: 30,
+                                color: Colors.amber,
                               ),
                             ),
-                            const DividerWidget(
-                              dividerName: "اقسام",
-                              marginTop: 2.0,
-                              marginBottom: 4.0,
-                            ),
-                            Container(
-                              height: size.height * .5,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: foodProvider.topCategories.isEmpty
-                                  ? const Center(
-                                      child: const SpinKitThreeBounce(
-                                        size: 30,
-                                        color: Colors.amber,
-                                      ),
-                                    )
-                                  : _buildCategories(context),
-                            ),
-                            if (preferences.favouriteDishes.isNotEmpty)
-                              const DividerWidget(
-                                  dividerName: "الأطباق المفضله"),
-                            if (preferences.favouriteDishes.isNotEmpty)
-                              const FavList(forHomePageView: true),
-                            if (preferences.lastVisitedDishes.isNotEmpty)
-                              const DividerWidget(dividerName: "شاهدتُ من قبل"),
-                            if (preferences.lastVisitedDishes.isNotEmpty)
-                              const LastVisitedList(),
-                            if (ads.isBannerAdLoaded)
-                              SizedBox(
-                                height: Ads.bannerAdHeight.toDouble(),
-                                width: size.width,
-                              )
-                          ],
-                        ),
-                      ),
+                          );
+                        else
+                          return Column(
+                            children: [
+                              const SlideShow(),
+                              const SizedBox(height: 8),
+                              const SlideShowIndicator(),
+                            ],
+                          );
+                      },
                     ),
                   ),
-                  // if (ads.isBannerAdLoaded)
-                  Positioned(
-                    bottom: 0,
-                    child: BannerWidget(size.width.floor()),
+                  const DividerWidget(
+                    dividerName: "اقسام",
+                    marginTop: 2.0,
+                    marginBottom: 4.0,
                   ),
+                  Container(
+                    height: size.height * .5,
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: foodProvider.topCategories.isEmpty
+                        ? const Center(
+                            child: const SpinKitThreeBounce(
+                              size: 30,
+                              color: Colors.amber,
+                            ),
+                          )
+                        : _buildCategories(context),
+                  ),
+                  if (preferences.favouriteDishes.isNotEmpty)
+                    const DividerWidget(dividerName: "الأطباق المفضله"),
+                  if (preferences.favouriteDishes.isNotEmpty)
+                    const FavList(forHomePageView: true),
+                  if (preferences.lastVisitedDishes.isNotEmpty)
+                    const DividerWidget(dividerName: "شاهدتُ من قبل"),
+                  if (preferences.lastVisitedDishes.isNotEmpty)
+                    const LastVisitedList(),
                 ],
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
