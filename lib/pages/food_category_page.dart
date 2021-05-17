@@ -7,7 +7,7 @@ import 'package:wasfat_akl/providers/ad_provider.dart';
 
 import 'package:wasfat_akl/providers/dishes_provider.dart';
 import 'package:wasfat_akl/providers/food_category_provider.dart';
-import 'package:wasfat_akl/utils/ad_widget.dart';
+import 'package:wasfat_akl/widgets/ads/banner_ad_widget.dart';
 import 'package:wasfat_akl/widgets/ads/banner_widget.dart';
 import 'package:wasfat_akl/widgets/ads/native_ad_widget.dart';
 import 'package:wasfat_akl/widgets/category_widgets/category_custom_bar.dart';
