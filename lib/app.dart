@@ -20,7 +20,6 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => getIt<Auth>()..getUserData()),
-        ChangeNotifierProvider(create: (_) => getIt<AdmobProvider>()),
         ChangeNotifierProvider(create: (_) => ExpandCommentProvider()),
         ChangeNotifierProvider(
             create: (_) => getIt<FoodCategoryProvider>()..getFoodCategories()),
@@ -33,18 +32,25 @@ class App extends StatelessWidget {
             ..getLastVisitedDishes(),
         ),
       ],
-      child: GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-            fontFamily: 'Cairo',
-            appBarTheme: AppBarTheme(
-              centerTitle: true,
-              color: Colors.amber[700],
-              brightness: Brightness.dark,
-            )),
-        color: Colors.amber[900],
-        title: 'وصفات',
-        home: const HomePage(),
+      child: ChangeNotifierProvider(
+        create: (_) => getIt<AdmobProvider>(),
+        builder: (context, _) {
+          final adProvider = context.watch<AdmobProvider>();
+          print('counter: ${adProvider.interstitialCounter}');
+          return GetMaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+                fontFamily: 'Cairo',
+                appBarTheme: AppBarTheme(
+                  centerTitle: true,
+                  color: Colors.amber[700],
+                  brightness: Brightness.dark,
+                )),
+            color: Colors.amber[900],
+            title: 'وصفات',
+            home: const HomePage(),
+          );
+        },
       ),
     );
   }

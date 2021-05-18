@@ -32,6 +32,7 @@ class OneCommentWidget extends StatelessWidget {
     final hasRated = dish.rating.containsKey(comment.ownerId);
     final isLiked = comment.usersLikes.contains(auth.wasfatUser?.uid);
     final isExpanded = expandComment.isExpanded(comment.id, inCommentPage);
+    print(comment.id);
     void onTap() {
       final isExpanded = expandComment.isExpanded(comment.id, inCommentPage);
       if (isExpanded)

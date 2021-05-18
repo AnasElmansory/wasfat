@@ -37,6 +37,7 @@ class Auth extends ChangeNotifier {
     await _googleSignIn.signOut();
     await _firebaseAuth.signOut();
     wasfatUser = null;
+    this._isSignedIn = false;
     notifyListeners();
   }
 
@@ -64,7 +65,7 @@ class Auth extends ChangeNotifier {
     wasfatUser = WasfatUser(
       uid: user.uid,
       displayName: user.displayName ?? 'User',
-      email: user.email ?? 'User@email.com',
+      email: user.email,
       photoURL: user.photoURL,
       phoneNumber: user.phoneNumber,
     );

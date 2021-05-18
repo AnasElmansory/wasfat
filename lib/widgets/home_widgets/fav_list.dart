@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:wasfat_akl/models/dish.dart';
 import 'package:wasfat_akl/providers/dishes_preferences.dart';
 import 'package:wasfat_akl/utils/navigation.dart';
+import 'package:wasfat_akl/widgets/ads/banner_wrap_list.dart';
+import 'package:wasfat_akl/widgets/ads/native_ad_widget.dart';
 import 'package:wasfat_akl/widgets/dish_widgets/dish_tile.dart';
 
 import '../core/confirmation_dialog.dart';
@@ -22,11 +24,36 @@ class FavList extends HookWidget {
       ..forward();
     final size = context.mediaQuerySize;
     final preferences = context.watch<DishesPreferencesProvider>();
+
     return Container(
       height: forHomePageView ? size.height * 0.25 : size.height,
-      child: ListView.builder(
+      child: BannerWrapList(
+        listType: ListType.ListBuilder,
+        visible: !forHomePageView,
+        listBuilder: _favouritelistBuilder(preferences, animation),
+      ),
+    );
+  }
+
+  Widget _favouritelistBuilder(
+    DishesPreferencesProvider preferences,
+    Animation<double> animation,
+  ) =>
+      ListView.separated(
         scrollDirection: forHomePageView ? Axis.horizontal : Axis.vertical,
         itemCount: preferences.favouriteDishes.length,
+        separatorBuilder: (context, index) {
+          final size = context.mediaQuerySize;
+          final nativeAdContainerSize = Size(size.width, 150);
+          final isAdIndex = ((index + 1) % 3 == 0);
+          if (isAdIndex && !forHomePageView)
+            return Container(
+              constraints: BoxConstraints.loose(nativeAdContainerSize),
+              child: const NativeAdWidget(),
+            );
+          else
+            return Container();
+        },
         itemBuilder: (context, index) {
           final dish = preferences.favouriteDishes[index];
           return ScaleTransition(
@@ -36,9 +63,7 @@ class FavList extends HookWidget {
                 : _favPageWidget(animation, dish, context),
           );
         },
-      ),
-    );
-  }
+      );
 
   Widget _homePageWidget(BuildContext context, Dish dish) {
     final preferences = context.watch<DishesPreferencesProvider>();
@@ -78,8 +103,4 @@ class FavList extends HookWidget {
       animation: animation,
     );
   }
-}
-
-Widget s() {
-  return GFCard();
 }

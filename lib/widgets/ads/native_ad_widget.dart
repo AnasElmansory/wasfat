@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:native_admob_flutter/native_admob_flutter.dart';
 
@@ -10,11 +12,20 @@ class NativeAdWidget extends StatefulWidget {
 
 class _NativeAdWidgetState extends State<NativeAdWidget> {
   late NativeAdController _nativeAdController;
-
+  late StreamSubscription _subscription;
   @override
   void initState() {
     _nativeAdController = NativeAdController();
+    _subscription = _nativeAdController.onEvent.listen((event) {
+      setState(() {});
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -26,6 +37,7 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
         controller: _nativeAdController,
         builder: (context, child) {
           return Container(
+            height: !_nativeAdController.isLoaded ? 0 : null,
             child: child,
           );
         },

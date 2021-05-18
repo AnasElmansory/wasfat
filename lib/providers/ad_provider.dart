@@ -10,27 +10,37 @@ class AdmobProvider extends ChangeNotifier {
   }
 
   AdmobProvider() {
-    initIntersitial();
-    this.addListener(() {
-      if (this._interstitialCounter == 5) {
-        if (this._interstitialAd.isLoaded) this._interstitialAd.show();
+    this.addListener(() async {
+      print('listening');
+      if (this._interstitialCounter % 4 == 0) {
+        await initIntersitial();
         this._interstitialCounter = 0;
       }
     });
   }
 
-  void userNavigate() => this._interstitialCounter++;
+  static Future<void> showAppOpenAd() async {
+    final appOpenAd = AppOpenAd(unitId: AppOpenAd.testUnitId);
+    appOpenAd.init();
+    await appOpenAd.load();
+    await appOpenAd.show();
+    appOpenAd.dispose();
+  }
 
-  final _interstitialAd = InterstitialAd(unitId: InterstitialAd.testUnitId);
-  InterstitialAd get interstitialAd => this._interstitialAd;
+  void userNavigate() => interstitialCounter++;
+
+  InterstitialAd? _interstitialAd;
+
   Future<void> initIntersitial() async {
-    _interstitialAd.init();
-    await _interstitialAd.load();
+    _interstitialAd = InterstitialAd(unitId: InterstitialAd.testUnitId);
+    _interstitialAd!.init();
+    await _interstitialAd!.load();
+    await _interstitialAd!.show();
   }
 
   @override
   void dispose() {
-    this._interstitialAd.dispose();
+    this._interstitialAd?.dispose();
     super.dispose();
   }
 }

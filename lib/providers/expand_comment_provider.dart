@@ -9,12 +9,15 @@ class ExpandCommentProvider extends ChangeNotifier {
   //   _isAllExpanded = value;
   //   notifyListeners();
   // }
+  HashMap<String, bool> _commentExpanstion = HashMap();
 
   bool isAllExpanded() {
-    return this._commentExpanstion.containsValue(true);
+    final value = this._commentExpanstion.isEmpty
+        ? true
+        : this._commentExpanstion.containsValue(true);
+    notifyListeners();
+    return value;
   }
-
-  HashMap<String, bool> _commentExpanstion = HashMap();
 
   void expandAll() {
     this._commentExpanstion.updateAll((key, value) => true);

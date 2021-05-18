@@ -3,14 +3,14 @@ import 'dart:convert';
 class WasfatUser {
   final String uid;
   final String displayName;
-  final String email;
+  final String? email;
   final String? photoURL;
   final String? phoneNumber;
 
   WasfatUser({
     required this.uid,
     required this.displayName,
-    required this.email,
+    this.email,
     this.photoURL,
     this.phoneNumber,
   });

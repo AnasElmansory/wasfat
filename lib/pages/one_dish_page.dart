@@ -12,6 +12,8 @@ import 'package:wasfat_akl/models/dish.dart';
 import 'package:wasfat_akl/providers/dish_comments_provider.dart';
 import 'package:wasfat_akl/providers/dishes_preferences.dart';
 import 'package:wasfat_akl/providers/dishes_provider.dart';
+import 'package:wasfat_akl/widgets/ads/banner_wrap_list.dart';
+import 'package:wasfat_akl/widgets/ads/native_ad_widget.dart';
 import 'package:wasfat_akl/widgets/core/divider_widget.dart';
 import 'package:wasfat_akl/widgets/core/show_image_dialog.dart';
 import 'package:wasfat_akl/widgets/dish_widgets/dish_custom_bar.dart';
@@ -67,13 +69,18 @@ class _OneDishPageState extends State<OneDishPage>
       body: Stack(
         children: [
           Positioned.fill(
-            child: CustomScrollView(
+            child: BannerWrapList(
+              listType: ListType.Sliver,
               controller: dishesProvider.scrollController,
-              slivers: [
+              pageWidgets: [
                 DishCustomBar(dish: dish),
                 SliverList(
                   delegate: SliverChildListDelegate([
                     _subtitle(dish.subtitle),
+                    Container(
+                      constraints: BoxConstraints.loose(Size(size.width, 150)),
+                      child: const NativeAdWidget(),
+                    ),
                     _dishDescription(dish, size),
                     const DividerWidget(dividerName: "أضف تقييم", marginTop: 2),
                     _commentTextField(_controller, size),
@@ -197,7 +204,7 @@ Widget _commentTextField(TextEditingController controller, Size size) {
 Widget _customFAB(Animation<double> animation, Dish dish) {
   final shared = Get.context!.watch<DishesPreferencesProvider>();
   return Positioned(
-    bottom: 16,
+    bottom: 60,
     right: 0,
     child: FadeTransition(
       opacity: animation,

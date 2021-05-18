@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:wasfat_akl/models/dish.dart';
 import 'package:wasfat_akl/providers/dish_comments_provider.dart';
 import 'package:wasfat_akl/providers/expand_comment_provider.dart';
+import 'package:wasfat_akl/widgets/ads/banner_wrap_list.dart';
 import 'package:wasfat_akl/widgets/dish_widgets/one_comment_widget.dart';
 
 class CommentPage extends StatefulWidget {
@@ -39,40 +40,46 @@ class _CommentPageState extends State<CommentPage>
     final expandComment = context.watch<ExpandCommentProvider>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('التعليقات'),
-        actions: [
-          IconButton(
-            icon: AnimatedIcon(
-              icon: AnimatedIcons.view_list,
-              progress: _controller.view,
-            ),
-            onPressed: () async {
-              if (expandComment.isAllExpanded()) {
-                await _controller.forward();
-                expandComment.collapseAll();
-              } else {
-                await _controller.reverse();
-                expandComment.expandAll();
-              }
-            },
-          )
-        ],
-      ),
-      body: ListView.separated(
-        itemCount: commentProvider.comments.length,
-        separatorBuilder: (context, index) {
-          return const Divider(endIndent: 25, indent: 40);
-        },
-        itemBuilder: (context, index) {
-          final comment = commentProvider.comments[index];
-          return OneCommentWidget(
-            comment: comment,
-            dish: dish,
-            inCommentPage: true,
-          );
-        },
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('التعليقات'),
+          actions: [
+            IconButton(
+              icon: AnimatedIcon(
+                icon: AnimatedIcons.list_view,
+                progress: _controller,
+              ),
+              onPressed: () async {
+                if (expandComment.isAllExpanded()) {
+                  await _controller.reverse();
+                  expandComment.collapseAll();
+                } else {
+                  await _controller.forward();
+                  expandComment.expandAll();
+                }
+              },
+            )
+          ],
+        ),
+        body: BannerWrapList(
+          listType: ListType.ListBuilder,
+          listBuilder: commentListBuilder(commentProvider, dish),
+        ));
   }
+}
+
+Widget commentListBuilder(DishCommentProvider commentProvider, Dish dish) {
+  return ListView.separated(
+    itemCount: commentProvider.comments.length,
+    separatorBuilder: (context, index) {
+      return const Divider(endIndent: 25, indent: 40);
+    },
+    itemBuilder: (context, index) {
+      final comment = commentProvider.comments[index];
+      return OneCommentWidget(
+        comment: comment,
+        dish: dish,
+        inCommentPage: true,
+      );
+    },
+  );
 }
