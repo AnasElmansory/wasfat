@@ -147,7 +147,6 @@ class DishesProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    print('dishesProviderDisposed');
     this._scrollController?.dispose();
     this._controllers.values.forEach((controller) => controller.dispose());
     _likesSubscription?.cancel();

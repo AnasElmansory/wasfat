@@ -5,3 +5,4 @@ google-services.json
 .flutter-plugins-dependencies
 .packages
 .gradle
+key.properties

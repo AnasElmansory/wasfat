@@ -61,6 +61,5 @@ Future<void> navigateToAllCommentPage(Dish dish) async {
 
 void userHasNavigate() {
   final admobProvider = Get.context!.read<AdmobProvider>();
-  print(admobProvider.interstitialCounter);
   admobProvider.userNavigate();
 }

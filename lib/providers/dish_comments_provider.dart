@@ -77,7 +77,7 @@ class DishCommentProvider extends ChangeNotifier {
     final auth = Get.context!.read<Auth>();
     if (!await auth.isLoggedIn()) return await navigateToSignPageUntil();
     Comment _comment;
-    if (content.isEmpty && content.length > 1500) return;
+    if (content.isEmpty || content.length > 1500) return;
     _comment = Comment(
       id: Uuid().v1(),
       dishId: dishId,

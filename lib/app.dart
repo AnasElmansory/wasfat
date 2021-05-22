@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:wasfat_akl/get_it.dart';
 import 'package:wasfat_akl/providers/ad_provider.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
+import 'package:wasfat_akl/providers/banner_provider.dart';
 import 'package:wasfat_akl/providers/dish_comments_provider.dart';
 import 'package:wasfat_akl/providers/dishes_provider.dart';
 import 'package:wasfat_akl/providers/expand_comment_provider.dart';
@@ -21,6 +22,7 @@ class App extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => getIt<Auth>()..getUserData()),
         ChangeNotifierProvider(create: (_) => ExpandCommentProvider()),
+        ChangeNotifierProvider(create: (_) => BannerProvider()),
         ChangeNotifierProvider(
             create: (_) => getIt<FoodCategoryProvider>()..getFoodCategories()),
         ChangeNotifierProvider(
@@ -35,8 +37,7 @@ class App extends StatelessWidget {
       child: ChangeNotifierProvider(
         create: (_) => getIt<AdmobProvider>(),
         builder: (context, _) {
-          final adProvider = context.watch<AdmobProvider>();
-          print('counter: ${adProvider.interstitialCounter}');
+          context.watch<AdmobProvider>();
           return GetMaterialApp(
             debugShowCheckedModeBanner: false,
             theme: ThemeData(

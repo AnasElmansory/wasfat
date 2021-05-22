@@ -12,19 +12,25 @@ class DishesService {
 
   Future<List<Dish>> getDishesRecentlyAdded(List<String> categoriesId) async {
     List<Dish> dishes = [];
-    Future<Dish> getOneDishFromCategory(String categoryId) async {
-      final query = await _firestore
-          .collection('dishes')
-          .orderBy('addDate', descending: true)
-          .where('categoryId', arrayContains: categoryId)
-          .limit(1)
-          .get();
-      return Dish.fromMap(query.docs.single.data());
-    }
+    if (categoriesId.isNotEmpty) {
+      Future<Dish> getOneDishFromCategory(String categoryId) async {
+        final query = await _firestore
+            .collection('dishes')
+            .orderBy('addDate', descending: true)
+            .where('categoryId', arrayContains: categoryId)
+            .limit(1)
+            .get();
+        return Dish.fromMap(query.docs.single.data());
+      }
 
-    dishes = await Future.wait<Dish>(
-      categoriesId.map((category) => getOneDishFromCategory(category)),
-    );
+      dishes = await Future.wait<Dish>(
+        categoriesId.map((category) => getOneDishFromCategory(category)),
+      );
+    } else {
+      final query = await _firestore.collection('dishes').limit(5).get();
+      dishes =
+          query.docs.map<Dish>((dish) => Dish.fromMap(dish.data())).toList();
+    }
     return dishes;
   }
 

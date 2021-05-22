@@ -89,8 +89,8 @@ class HomePage extends StatelessWidget {
                         marginBottom: 4.0,
                       ),
                       Container(
-                        height: size.height * .5,
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        height: size.width,
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
                         child: foodProvider.topCategories.isEmpty
                             ? const Center(
                                 child: const SpinKitThreeBounce(
@@ -125,8 +125,8 @@ Widget _buildCategories(BuildContext context) {
     physics: const NeverScrollableScrollPhysics(),
     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 2,
-      crossAxisSpacing: 2,
-      mainAxisSpacing: 2,
+      crossAxisSpacing: 4,
+      mainAxisSpacing: 4,
     ),
     itemBuilder: (context, index) {
       final category = (index != 3) ? foodProvider.topCategories[index] : null;

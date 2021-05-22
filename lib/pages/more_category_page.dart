@@ -28,12 +28,12 @@ Widget _moreCategorylistBuilder(
   Size categorySize,
 ) {
   return Padding(
-    padding: const EdgeInsets.only(top: 8.0, right: 8, left: 8),
+    padding: const EdgeInsets.all(4.0),
     child: GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: 2,
-        crossAxisSpacing: 2,
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
       ),
       itemCount: categoryProvider.categories.length,
       itemBuilder: (context, index) {

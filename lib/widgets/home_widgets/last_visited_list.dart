@@ -3,7 +3,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:wasfat_akl/providers/dishes_preferences.dart';
-import 'package:wasfat_akl/providers/food_category_provider.dart';
 import 'package:wasfat_akl/utils/navigation.dart';
 
 import '../core/confirmation_dialog.dart';
@@ -19,6 +18,7 @@ class LastVisitedList extends HookWidget {
     final preferences = context.watch<DishesPreferencesProvider>();
     return Container(
       height: size.height * 0.25,
+      padding: const EdgeInsets.only(bottom: 4),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: preferences.lastVisitedDishes.length,

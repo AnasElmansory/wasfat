@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:get/get.dart';
 import 'package:wasfat_akl/providers/dishes_provider.dart';
-import 'package:wasfat_akl/providers/food_category_provider.dart';
 import 'package:wasfat_akl/widgets/core/cached_image.dart';
 import 'package:wasfat_akl/widgets/core/show_image_dialog.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';

@@ -53,25 +53,31 @@ class _FoodCategoryPageState extends State<FoodCategoryPage>
         listType: ListType.Sliver,
         pageWidgets: [
           CategoryCustomBar(category: category),
-          PagedSliverList(
-            pagingController: dishesProvider.getPagingController(category.id),
-            builderDelegate: PagedChildBuilderDelegate<Dish>(
-              itemBuilder: (context, dish, index) {
-                final size = context.mediaQuerySize;
-                final isAdIndex = index % 3 == 0 && index != 0;
-                return Container(
-                  child: Column(
-                    children: [
-                      if (isAdIndex)
-                        Container(
-                          height: size.height * .2,
-                          child: const NativeAdWidget(),
-                        ),
-                      DishTile(dish: dish, animation: _controller),
-                    ],
-                  ),
-                );
-              },
+          SliverPadding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            sliver: PagedSliverList(
+              pagingController: dishesProvider.getPagingController(category.id),
+              builderDelegate: PagedChildBuilderDelegate<Dish>(
+                itemBuilder: (context, dish, index) {
+                  final size = context.mediaQuerySize;
+                  final isAdIndex = index % 3 == 0 && index != 0;
+                  final nativeAdContainerSize = Size(size.width, 150);
+                  return Container(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (isAdIndex)
+                          Container(
+                            constraints:
+                                BoxConstraints.loose(nativeAdContainerSize),
+                            child: const NativeAdWidget(),
+                          ),
+                        DishTile(dish: dish, animation: _controller),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],

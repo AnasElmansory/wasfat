@@ -1,7 +1,11 @@
 const String appLink =
     "https://play.google.com/store/apps/details?id=ok2code.wasafatakl.wasfat_akl";
-const String baseUrl =
-    "https://fcm.googleapis.com/v1/projects/wasfat-5edfe/messages:send";
+
+const bannerUnitId = 'ca-app-pub-8675062712727138/1599985887';
+const interstitialUnitId = 'ca-app-pub-8675062712727138/2721495863';
+const nativeUnitId = 'ca-app-pub-8675062712727138/7782250855';
+const appOpenUnitId = 'ca-app-pub-8675062712727138/3249492367';
+
 const String privacy = """<!DOCTYPE html>
     <html>
     <head>

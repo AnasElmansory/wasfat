@@ -9,7 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await MobileAds.initialize();
-  await AdmobProvider.showAppOpenAd();
   init();
   runApp(const App());
+  await AdmobProvider.showAppOpenAd();
 }

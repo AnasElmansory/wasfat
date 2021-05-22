@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
-import 'package:getwidget/getwidget.dart';
 import 'package:provider/provider.dart';
 import 'package:wasfat_akl/models/dish.dart';
 import 'package:wasfat_akl/providers/dishes_preferences.dart';

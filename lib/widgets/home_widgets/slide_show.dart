@@ -2,7 +2,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wasfat_akl/providers/dishes_provider.dart';
-import 'package:wasfat_akl/providers/food_category_provider.dart';
 import 'package:wasfat_akl/providers/slider_indicator_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:wasfat_akl/utils/navigation.dart';

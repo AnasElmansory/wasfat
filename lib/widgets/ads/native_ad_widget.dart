@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:native_admob_flutter/native_admob_flutter.dart';
+import 'package:wasfat_akl/utils/constants.dart';
 
 class NativeAdWidget extends StatefulWidget {
   const NativeAdWidget();

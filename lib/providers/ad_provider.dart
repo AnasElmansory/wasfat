@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:native_admob_flutter/native_admob_flutter.dart';
+import 'package:wasfat_akl/utils/constants.dart';
 
 class AdmobProvider extends ChangeNotifier {
   int _interstitialCounter = 0;
@@ -11,7 +12,6 @@ class AdmobProvider extends ChangeNotifier {
 
   AdmobProvider() {
     this.addListener(() async {
-      print('listening');
       if (this._interstitialCounter % 4 == 0) {
         await initIntersitial();
         this._interstitialCounter = 0;
@@ -23,7 +23,7 @@ class AdmobProvider extends ChangeNotifier {
     final appOpenAd = AppOpenAd(unitId: AppOpenAd.testUnitId);
     appOpenAd.init();
     await appOpenAd.load();
-    await appOpenAd.show();
+    if (appOpenAd.isAvailable) await appOpenAd.show();
     appOpenAd.dispose();
   }
 
