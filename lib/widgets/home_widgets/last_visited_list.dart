@@ -12,6 +12,8 @@ class LastVisitedList extends HookWidget {
   const LastVisitedList();
   @override
   Widget build(BuildContext context) {
+    print('building lastVisitesList');
+
     final animation = useAnimationController(duration: kTabScrollDuration)
       ..forward();
     final size = context.mediaQuerySize;
@@ -46,7 +48,7 @@ class LastVisitedList extends HookWidget {
               child: OneCardWidget(
                 name: dish.name,
                 imageUrl: dish.dishImages?.first ?? '',
-                size: Size(size.width * 0.5, size.height * 0.25),
+                size: Size.square(size.width * 0.5),
                 textColor: Colors.white,
               ),
             ),

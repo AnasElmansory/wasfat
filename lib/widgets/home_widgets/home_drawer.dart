@@ -13,6 +13,7 @@ class HomeDrawer extends StatelessWidget {
   const HomeDrawer();
   @override
   Widget build(BuildContext context) {
+    print('building drawer');
     final auth = context.watch<Auth>();
     final size = context.mediaQuerySize;
     return Container(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:wasfat_akl/models/food_category.dart';
 import 'package:wasfat_akl/widgets/core/cached_image.dart';
 import 'package:wasfat_akl/widgets/core/show_image_dialog.dart';
@@ -16,47 +18,41 @@ class CategoryCustomBar extends StatefulWidget {
 }
 
 class _CategoryCustomBarState extends State<CategoryCustomBar> {
-  double _barHeight = 0.0;
   FoodCategory get category => widget.category;
 
   @override
   Widget build(BuildContext context) {
     final size = context.mediaQuerySize;
-    final padding = context.mediaQueryPadding;
 
-    return SliverAppBar(
-      backgroundColor: (_barHeight == (kToolbarHeight + padding.top))
-          ? Colors.amber[700]
-          : (_barHeight < 90)
-          ? Colors.amber[500]
-          : (_barHeight < 120)
-          ? Colors.amber[300]
-          : Colors.white70,
-      expandedHeight: size.height * 0.3,
-      title: Text(
-        (_barHeight == (kToolbarHeight + padding.top)) ? category.name : '',
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      pinned: true,
-      stretch: true,
-      flexibleSpace: InkWell(
-        onTap: () async => await showDialog(
-          context: context,
-          builder: (_) => ShowImageDialog(
-            photoUrl: category.imageUrl,
+    final imageBottomMargin = 24.0;
+    final expandedHeight = size.height * .3;
+    return SliverLayoutBuilder(
+      builder: (BuildContext context, SliverConstraints constraints) {
+        final height = constraints.scrollOffset;
+        final isExpanded = height <= (expandedHeight * 0.5);
+
+        return SliverAppBar(
+          backgroundColor:
+              isExpanded ? Colors.white : Colors.amber[800],
+          expandedHeight: expandedHeight,
+          title: Text(
+            isExpanded ? '' : category.name,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-        ),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-              setState(() => _barHeight = constraints.biggest.height);
-            });
-            return FlexibleSpaceBar(
+          pinned: true,
+          stretch: true,
+          flexibleSpace: InkWell(
+            onTap: () async => await showDialog(
+              context: context,
+              builder: (_) => ShowImageDialog(
+                photoUrl: category.imageUrl,
+              ),
+            ),
+            child: FlexibleSpaceBar(
               background: Stack(
                 children: [
-                  Positioned(
-                    width: size.width,
-                    height: size.height * 0.3,
+                  Positioned.fill(
+                    bottom: imageBottomMargin,
                     child: ClipRRect(
                       borderRadius: const BorderRadius.only(
                         bottomLeft: const Radius.circular(100),
@@ -91,10 +87,10 @@ class _CategoryCustomBarState extends State<CategoryCustomBar> {
                   )
                 ],
               ),
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

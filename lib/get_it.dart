@@ -10,9 +10,12 @@ import 'package:wasfat_akl/firebase/dishes_service.dart';
 import 'package:wasfat_akl/providers/ad_provider.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:wasfat_akl/providers/dish_comments_provider.dart';
+import 'package:wasfat_akl/providers/dish_likes_provider.dart';
 import 'package:wasfat_akl/providers/dishes_provider.dart';
 import 'package:wasfat_akl/providers/food_category_provider.dart';
 import 'package:wasfat_akl/providers/dishes_preferences.dart';
+
+import 'providers/search_provider.dart';
 
 final getIt = GetIt.instance;
 
@@ -24,6 +27,12 @@ void init() {
 
   getIt.registerFactory<DishesProvider>(
       () => DishesProvider(getIt<DishesService>()));
+
+  getIt.registerFactory<SearchProvider>(
+      () => SearchProvider(getIt<DishesService>()));
+
+  getIt.registerFactory<DishLikesProvider>(
+      () => DishLikesProvider(getIt<DishesService>()));
 
   getIt.registerFactory<DishesPreferencesProvider>(
       () => DishesPreferencesProvider());

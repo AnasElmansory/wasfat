@@ -86,10 +86,11 @@ class _BannerWrapListState extends State<BannerWrapList> {
     return Stack(
       children: [
         Positioned.fill(
-          bottom:
-              ((loaded || loading) && widget.listType == ListType.ListBuilder)
-                  ? bannerSize.height
-                  : 0,
+          bottom: ((loaded || loading) &&
+                  widget.visible &&
+                  widget.listType == ListType.ListBuilder)
+              ? bannerSize.height
+              : 0,
           child: buildList(),
         ),
         if (widget.visible && !loadFailed)

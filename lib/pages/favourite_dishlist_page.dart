@@ -8,6 +8,7 @@ class FavouriteListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('build FavouriteListPage');
     final shared = context.watch<DishesPreferencesProvider>();
     return Scaffold(
       appBar: AppBar(

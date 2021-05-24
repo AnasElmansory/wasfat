@@ -11,6 +11,7 @@ class SlideShow extends StatelessWidget {
   const SlideShow();
   @override
   Widget build(BuildContext context) {
+    print('building SlideShow');
     final slider = context.watch<SliderIndicatorProvider>();
     final dishesProvider = context.watch<DishesProvider>();
     final size = context.mediaQuerySize;

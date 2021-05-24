@@ -1,6 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
-import 'package:wasfat_akl/providers/dishes_provider.dart';
+import 'package:getwidget/getwidget.dart';
+import 'package:wasfat_akl/providers/dish_likes_provider.dart';
 import 'package:wasfat_akl/widgets/core/cached_image.dart';
 import 'package:wasfat_akl/widgets/core/show_image_dialog.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
@@ -19,51 +21,48 @@ class DishCustomBar extends StatefulWidget {
 }
 
 class _DishCustomBarState extends State<DishCustomBar> {
-  double _barHeight = 0.0;
   Dish get dish => widget.dish;
 
   @override
   Widget build(BuildContext context) {
-    final dishesProvider = context.watch<DishesProvider>();
+    final dishLikesProvider = context.watch<DishLikesProvider>();
     final auth = context.watch<Auth>();
-    final padding = context.mediaQueryPadding;
     final size = context.mediaQuerySize;
-    final dishLikes = dishesProvider.dishesLikes[dish.id];
+    final dishLikes = dishLikesProvider.dishesLikes[dish.id];
     final dishLikesCount = dishLikes?.length ?? 0;
     final expandedHeight = size.height * .3;
     final imageBottomMargin = 24.0;
     final isLiked = dishLikes?.contains(auth.wasfatUser?.uid ?? '') ?? false;
-    return SliverAppBar(
-      backgroundColor: (_barHeight == (kToolbarHeight + padding.top))
-          ? Colors.amber[700]
-          : (_barHeight < 90)
-          ? Colors.amber[500]
-          : (_barHeight < 120)
-          ? Colors.amber[300]
-          : Colors.white70,
-      expandedHeight: expandedHeight,
-      title: AutoSizeText(
-        (_barHeight == (kToolbarHeight + padding.top)) ? dish.name : '',
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      pinned: true,
-      stretch: true,
-      flexibleSpace: InkWell(
-        onTap: () async {
-          await showDialog(
-            context: context,
-            builder: (_) {
-              return ShowImageDialog(
-                photoUrl: dish.dishImages?.first ?? '',
+
+    return SliverLayoutBuilder(
+      builder: (BuildContext context, SliverConstraints constraints) {
+        final height = constraints.scrollOffset;
+        final isExpanded = height <= (expandedHeight * 0.5);
+        final bar = isExpanded
+            ? const HideDishTitle()
+            : ShowDishTitle(dishName: dish.name);
+        return SliverAppBar(
+          backgroundColor:
+              isExpanded ? Colors.white : Colors.amber[800],
+          expandedHeight: expandedHeight,
+          title: bar,
+          pinned: true,
+          stretch: true,
+          onStretchTrigger: () async {
+            print('stretced');
+          },
+          flexibleSpace: InkWell(
+            onTap: () async {
+              await showDialog(
+                context: context,
+                builder: (_) {
+                  return ShowImageDialog(
+                    photoUrl: dish.dishImages?.first ?? '',
+                  );
+                },
               );
             },
-          );
-        },
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            WidgetsBinding.instance?.addPostFrameCallback((timeStamp) =>
-                setState(() => _barHeight = constraints.biggest.height));
-            return FlexibleSpaceBar(
+            child: FlexibleSpaceBar(
               background: Stack(
                 children: [
                   Positioned.fill(
@@ -91,9 +90,9 @@ class _DishCustomBarState extends State<DishCustomBar> {
                               ),
                               onPressed: () async {
                                 if (isLiked)
-                                  await dishesProvider.unlikeDish(dish.id);
+                                  await dishLikesProvider.unlikeDish(dish.id);
                                 else
-                                  await dishesProvider.likeDish(dish.id);
+                                  await dishLikesProvider.likeDish(dish.id);
                               },
                             ),
                             const SizedBox(width: 4.0),
@@ -157,10 +156,10 @@ class _DishCustomBarState extends State<DishCustomBar> {
                   ),
                 ],
               ),
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -170,4 +169,26 @@ String _getRatingValue(Map<String, int>? rating) {
   final sum = rating!.values.reduce((valueF, valueL) => valueF + valueL);
   final average = (sum / rating.values.length).toPrecision(1);
   return average.toString();
+}
+
+class HideDishTitle extends StatelessWidget {
+  const HideDishTitle();
+  @override
+  Widget build(BuildContext context) {
+    return const Text('');
+  }
+}
+
+class ShowDishTitle extends StatelessWidget {
+  final String dishName;
+
+  const ShowDishTitle({Key? key, required this.dishName}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AutoSizeText(
+      dishName,
+      style: const TextStyle(fontWeight: FontWeight.bold),
+    );
+  }
 }

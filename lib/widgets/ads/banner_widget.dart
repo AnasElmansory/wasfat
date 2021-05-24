@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:native_admob_flutter/native_admob_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:wasfat_akl/providers/banner_provider.dart';
@@ -13,17 +14,25 @@ class BannerWidget extends StatefulWidget {
   _BannerWidgetState createState() => _BannerWidgetState();
 }
 
-class _BannerWidgetState extends State<BannerWidget> {
-  final _bannerController = BannerAdController();
+class _BannerWidgetState extends State<BannerWidget>
+    with SingleTickerProviderStateMixin {
+  late BannerAdController _bannerController;
+  late AnimationController _animationController;
   StreamSubscription? _subscription;
   @override
   void initState() {
+    _animationController =
+        AnimationController(vsync: this, duration: kTabScrollDuration)
+          ..forward();
+    _bannerController = BannerAdController();
     listen();
     super.initState();
   }
 
   @override
   void dispose() {
+    _animationController.dispose();
+    _bannerController.dispose();
     _subscription?.cancel();
     super.dispose();
   }
@@ -50,15 +59,18 @@ class _BannerWidgetState extends State<BannerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BannerAd(
-      unitId: BannerAdController.testUnitId,
-      size: BannerSize.ADAPTIVE,
-      controller: _bannerController,
-      builder: (context, child) {
-        return Container(
-          child: child,
-        );
-      },
+    return ScaleTransition(
+      scale: _animationController,
+      child: BannerAd(
+        unitId: bannerUnitId,
+        size: BannerSize.ADAPTIVE,
+        controller: _bannerController,
+        builder: (context, child) {
+          return Container(
+            child: child,
+          );
+        },
+      ),
     );
   }
 }

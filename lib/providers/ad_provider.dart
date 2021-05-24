@@ -18,9 +18,9 @@ class AdmobProvider extends ChangeNotifier {
       }
     });
   }
-
+  // 01016307042
   static Future<void> showAppOpenAd() async {
-    final appOpenAd = AppOpenAd(unitId: AppOpenAd.testUnitId);
+    final appOpenAd = AppOpenAd(unitId: appOpenUnitId);
     appOpenAd.init();
     await appOpenAd.load();
     if (appOpenAd.isAvailable) await appOpenAd.show();
@@ -32,7 +32,7 @@ class AdmobProvider extends ChangeNotifier {
   InterstitialAd? _interstitialAd;
 
   Future<void> initIntersitial() async {
-    _interstitialAd = InterstitialAd(unitId: InterstitialAd.testUnitId);
+    _interstitialAd = InterstitialAd(unitId: interstitialUnitId);
     _interstitialAd!.init();
     await _interstitialAd!.load();
     await _interstitialAd!.show();

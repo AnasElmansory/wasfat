@@ -15,7 +15,7 @@ class CommentPage extends StatefulWidget {
 }
 
 class _CommentPageState extends State<CommentPage>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   Dish get dish => widget.dish;
   @override
@@ -36,7 +36,6 @@ class _CommentPageState extends State<CommentPage>
 
   @override
   Widget build(BuildContext context) {
-    final commentProvider = context.watch<DishCommentProvider>();
     final expandComment = context.watch<ExpandCommentProvider>();
 
     return Scaffold(
@@ -62,24 +61,32 @@ class _CommentPageState extends State<CommentPage>
         ),
         body: BannerWrapList(
           listType: ListType.ListBuilder,
-          listBuilder: commentListBuilder(commentProvider, dish),
+          listBuilder: CommentBuilderWidget(dish: dish),
         ));
   }
 }
 
-Widget commentListBuilder(DishCommentProvider commentProvider, Dish dish) {
-  return ListView.separated(
-    itemCount: commentProvider.comments.length,
-    separatorBuilder: (context, index) {
-      return const Divider(endIndent: 25, indent: 40);
-    },
-    itemBuilder: (context, index) {
-      final comment = commentProvider.comments[index];
-      return OneCommentWidget(
-        comment: comment,
-        dish: dish,
-        inCommentPage: true,
-      );
-    },
-  );
+class CommentBuilderWidget extends StatelessWidget {
+  final Dish dish;
+
+  const CommentBuilderWidget({Key? key, required this.dish}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    print('build CommentBuilderWidget');
+    final commentProvider = context.watch<DishCommentProvider>();
+    return ListView.separated(
+      itemCount: commentProvider.comments.length,
+      separatorBuilder: (context, index) {
+        return const Divider(endIndent: 25, indent: 40);
+      },
+      itemBuilder: (context, index) {
+        final comment = commentProvider.comments[index];
+        return OneCommentWidget(
+          comment: comment,
+          dish: dish,
+          inCommentPage: true,
+        );
+      },
+    );
+  }
 }

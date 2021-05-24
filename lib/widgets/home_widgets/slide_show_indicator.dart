@@ -7,6 +7,7 @@ class SlideShowIndicator extends StatelessWidget {
   const SlideShowIndicator();
   @override
   Widget build(BuildContext context) {
+    print('building SlideShowIndicator');
     final dishesProvider = context.watch<DishesProvider>();
     final slider = context.watch<SliderIndicatorProvider>();
     final recentDishes = dishesProvider.recentlyAddedDishes;

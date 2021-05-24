@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:wasfat_akl/models/dish.dart';
@@ -12,37 +11,42 @@ import 'package:wasfat_akl/widgets/dish_widgets/dish_tile.dart';
 import '../core/confirmation_dialog.dart';
 import '../core/one_card_widget.dart';
 
-class FavList extends HookWidget {
+class FavList extends StatelessWidget {
   final bool forHomePageView;
 
   const FavList({Key? key, this.forHomePageView = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final animation = useAnimationController(duration: kTabScrollDuration)
-      ..forward();
+    print('building FavList');
     final size = context.mediaQuerySize;
-    final preferences = context.watch<DishesPreferencesProvider>();
-
     return Container(
       height: forHomePageView ? size.height * 0.25 : size.height,
       child: BannerWrapList(
         listType: ListType.ListBuilder,
         visible: !forHomePageView,
-        listBuilder: _favouritelistBuilder(preferences, animation),
+        listBuilder: FavouritelistBuilder(forHomePageView),
       ),
     );
   }
+}
 
-  Widget _favouritelistBuilder(
-    DishesPreferencesProvider preferences,
-    Animation<double> animation,
-  ) =>
-      ListView.separated(
+class FavouritelistBuilder extends StatelessWidget {
+  final bool forHomePageView;
+
+  const FavouritelistBuilder(this.forHomePageView);
+  @override
+  Widget build(BuildContext context) {
+    print('building FavouritelistBuilder');
+
+    final preferences = context.watch<DishesPreferencesProvider>();
+    final size = context.mediaQuerySize;
+
+    return Container(
+      child: ListView.separated(
         scrollDirection: forHomePageView ? Axis.horizontal : Axis.vertical,
         itemCount: preferences.favouriteDishes.length,
         separatorBuilder: (context, index) {
-          final size = context.mediaQuerySize;
           final nativeAdContainerSize = Size(size.width, 150);
           final isAdIndex = ((index + 1) % 3 == 0);
           if (isAdIndex && !forHomePageView)
@@ -55,16 +59,33 @@ class FavList extends HookWidget {
         },
         itemBuilder: (context, index) {
           final dish = preferences.favouriteDishes[index];
-          return ScaleTransition(
-            scale: animation,
-            child: forHomePageView
-                ? _homePageWidget(context, dish)
-                : _favPageWidget(animation, dish, context),
-          );
+          return forHomePageView
+              ? HomePageWidget(dish: dish)
+              : FavPageWidget(dish: dish);
         },
-      );
+      ),
+    );
+  }
+}
 
-  Widget _homePageWidget(BuildContext context, Dish dish) {
+class FavPageWidget extends StatelessWidget {
+  final Dish dish;
+
+  const FavPageWidget({Key? key, required this.dish}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    print('build FavPageWidget');
+    return DishTile(dish: dish);
+  }
+}
+
+class HomePageWidget extends StatelessWidget {
+  final Dish dish;
+
+  const HomePageWidget({Key? key, required this.dish}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    print('build HomePageWidget');
     final preferences = context.watch<DishesPreferencesProvider>();
 
     final size = context.mediaQuerySize;
@@ -86,20 +107,9 @@ class FavList extends HookWidget {
       child: OneCardWidget(
         name: dish.name,
         imageUrl: dish.dishImages?.first ?? '',
-        size: Size(size.width * 0.5, size.height * 0.25),
+        size: Size.square(size.width * 0.5),
         textColor: Colors.white,
       ),
-    );
-  }
-
-  Widget _favPageWidget(
-    Animation<double> animation,
-    Dish dish,
-    BuildContext context,
-  ) {
-    return DishTile(
-      dish: dish,
-      animation: animation,
     );
   }
 }

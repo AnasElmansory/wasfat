@@ -51,7 +51,7 @@ Future<void> navigateToCategoryPage(String categoryId) async {
 
 Future<void> navigateToOneDishPage(Dish dish) async {
   userHasNavigate();
-  await Get.to(() => OneDishPage(dish: dish));
+  return await Get.to(() => OneDishPage(dish: dish));
 }
 
 Future<void> navigateToAllCommentPage(Dish dish) async {

@@ -1,10 +1,21 @@
+import 'package:flutter/foundation.dart';
+import 'package:native_admob_flutter/native_admob_flutter.dart';
+
 const String appLink =
     "https://play.google.com/store/apps/details?id=ok2code.wasafatakl.wasfat_akl";
 
-const bannerUnitId = 'ca-app-pub-8675062712727138/1599985887';
-const interstitialUnitId = 'ca-app-pub-8675062712727138/2721495863';
-const nativeUnitId = 'ca-app-pub-8675062712727138/7782250855';
-const appOpenUnitId = 'ca-app-pub-8675062712727138/3249492367';
+final bannerUnitId = (kReleaseMode)
+    ? 'ca-app-pub-8675062712727138/1599985887'
+    : BannerAdController.testUnitId;
+final interstitialUnitId = (kReleaseMode)
+    ? 'ca-app-pub-8675062712727138/2721495863'
+    : InterstitialAd.testUnitId;
+final nativeUnitId = (kReleaseMode)
+    ? 'ca-app-pub-8675062712727138/7782250855'
+    : NativeAdController.testUnitId;
+final appOpenUnitId = (kReleaseMode)
+    ? 'ca-app-pub-8675062712727138/3249492367'
+    : AppOpenAd.testUnitId;
 
 const String privacy = """<!DOCTYPE html>
     <html>

@@ -6,12 +6,14 @@ import 'package:wasfat_akl/providers/ad_provider.dart';
 import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:wasfat_akl/providers/banner_provider.dart';
 import 'package:wasfat_akl/providers/dish_comments_provider.dart';
+import 'package:wasfat_akl/providers/dish_likes_provider.dart';
 import 'package:wasfat_akl/providers/dishes_provider.dart';
 import 'package:wasfat_akl/providers/expand_comment_provider.dart';
 import 'package:wasfat_akl/providers/food_category_provider.dart';
 import 'package:wasfat_akl/providers/dishes_preferences.dart';
 
 import 'pages/home_page.dart';
+import 'providers/search_provider.dart';
 
 class App extends StatelessWidget {
   const App();
@@ -22,6 +24,8 @@ class App extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => getIt<Auth>()..getUserData()),
         ChangeNotifierProvider(create: (_) => ExpandCommentProvider()),
+        ChangeNotifierProvider(create: (_) => getIt<DishLikesProvider>()),
+        ChangeNotifierProvider(create: (_) => getIt<SearchProvider>()),
         ChangeNotifierProvider(create: (_) => BannerProvider()),
         ChangeNotifierProvider(
             create: (_) => getIt<FoodCategoryProvider>()..getFoodCategories()),

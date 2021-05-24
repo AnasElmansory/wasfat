@@ -21,29 +21,18 @@ class FoodCategoryPage extends StatefulWidget {
   _FoodCategoryPageState createState() => _FoodCategoryPageState();
 }
 
-class _FoodCategoryPageState extends State<FoodCategoryPage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+class _FoodCategoryPageState extends State<FoodCategoryPage> {
   @override
   void initState() {
     context
         .read<DishesProvider>()
         .handleDishesPagination(widget.foodCategoryId);
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    )..forward();
     super.initState();
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    print('build FoodCategoryPage');
     final dishesProvider = context.watch<DishesProvider>();
     final categoryProvider = context.watch<FoodCategoryProvider>();
     final category = categoryProvider.getCategory(widget.foodCategoryId)!;
@@ -72,7 +61,7 @@ class _FoodCategoryPageState extends State<FoodCategoryPage>
                                 BoxConstraints.loose(nativeAdContainerSize),
                             child: const NativeAdWidget(),
                           ),
-                        DishTile(dish: dish, animation: _controller),
+                        DishTile(dish: dish),
                       ],
                     ),
                   );

@@ -17,6 +17,9 @@ class DishCommentProvider extends ChangeNotifier {
 
   DishCommentProvider(this._commentService);
 
+  final _textController = TextEditingController();
+  TextEditingController get controller => this._textController;
+
   StreamSubscription<List<Comment>>? _topTwoCommentSubscription;
   StreamSubscription<List<Comment>>? _commentsSubscription;
 
@@ -43,6 +46,8 @@ class DishCommentProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    print('dishCommentProvider disposed');
+    _textController.dispose();
     _commentsSubscription?.cancel();
     _topTwoCommentSubscription?.cancel();
     super.dispose();
@@ -70,21 +75,22 @@ class DishCommentProvider extends ChangeNotifier {
   }
 
   Future<void> onSendPressed(
-    String content,
     String dishId,
     Map<String, int> rating,
   ) async {
     final auth = Get.context!.read<Auth>();
-    if (!await auth.isLoggedIn()) return await navigateToSignPageUntil();
+    //test awaiting signing
+    if (!await auth.isLoggedIn()) await navigateToSignPageUntil();
     Comment _comment;
-    if (content.isEmpty || content.length > 1500) return;
+    if (_textController.text.isEmpty || _textController.text.length > 1500)
+      return;
     _comment = Comment(
       id: Uuid().v1(),
       dishId: dishId,
       ownerId: auth.wasfatUser!.uid,
       ownerName: auth.wasfatUser!.displayName,
       ownerPhotoURL: auth.wasfatUser!.photoURL,
-      content: content,
+      content: _textController.text,
       commentDate: DateTime.now(),
     );
 
@@ -94,6 +100,7 @@ class DishCommentProvider extends ChangeNotifier {
     }
     await rate(dishId, rating);
     await comment(_comment);
+    _textController.clear();
   }
 
   Future<void> rate(String dishId, Map<String, int> rating) async {

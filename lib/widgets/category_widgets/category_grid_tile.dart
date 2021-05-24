@@ -9,6 +9,7 @@ class CategoryGridTile extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
+    print('build gridTile');
     return GridTile(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),

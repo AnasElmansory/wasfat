@@ -13,6 +13,7 @@ class DividerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('building dividerWidget');
     return Container(
       margin: EdgeInsets.only(top: marginTop, bottom: marginBottom),
       child: Row(

@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:provider/provider.dart';
@@ -8,14 +9,15 @@ import 'package:wasfat_akl/providers/dishes_preferences.dart';
 import 'package:wasfat_akl/utils/navigation.dart';
 import 'package:wasfat_akl/widgets/core/cached_image.dart';
 
-class DishTile extends StatelessWidget {
+class DishTile extends HookWidget {
   final Dish dish;
-  final Animation<double> animation;
 
-  const DishTile({Key? key, required this.dish, required this.animation})
-      : super(key: key);
+  const DishTile({Key? key, required this.dish});
   @override
   Widget build(BuildContext context) {
+    print('building DishTile');
+    final animation = useAnimationController(duration: kTabScrollDuration)
+      ..forward();
     final size = context.mediaQuerySize;
     final preferences = context.watch<DishesPreferencesProvider>();
     return ScaleTransition(

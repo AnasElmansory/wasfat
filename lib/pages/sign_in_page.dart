@@ -5,8 +5,6 @@ import 'package:wasfat_akl/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:wasfat_akl/utils/internet_helper.dart';
 
-typedef Sign = Future<void> Function();
-
 class SignInPage extends StatelessWidget {
   const SignInPage();
 
@@ -51,7 +49,7 @@ class SignInPage extends StatelessWidget {
               const SizedBox(height: 20),
               Expanded(
                 flex: 2,
-                child: Padding(
+                child: const Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: const Text(
                     'قم بتسجيل الدخول لتتمكن من اضافه تعليق',

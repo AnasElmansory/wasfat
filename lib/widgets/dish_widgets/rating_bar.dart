@@ -9,6 +9,7 @@ class RatingBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('build ratingbar');
     final size = context.mediaQuerySize;
     final commentProvider = context.watch<DishCommentProvider>();
     return Container(

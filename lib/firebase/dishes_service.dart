@@ -86,14 +86,25 @@ class DishesService {
     yield* likes;
   }
 
-  Future<List<Dish>> searchDish(String query) async {
-    final searchQuery = await _firestore
+  Future<List<Dish>> searchDish(
+    String query, {
+    required List<String> categoriesId,
+  }) async {
+    final mainQuery = _firestore
         .collection('dishes')
         .orderBy('name')
-        .startAt([query]).endAt([query + '\uf8ff']).get();
-    final dishes = searchQuery.docs
-        .map<Dish>((dish) => Dish.fromMap(dish.data()))
-        .toList();
+        .startAt([query]).endAt([query + '\uf8ff']);
+
+    late Query<Map<String, dynamic>> finalQuery;
+    if (categoriesId.isEmpty)
+      finalQuery = mainQuery;
+    else
+      finalQuery =
+          mainQuery.where('categoryId', arrayContainsAny: categoriesId);
+    final result = await finalQuery.get();
+    print(result.docs);
+    final dishes =
+        result.docs.map<Dish>((dish) => Dish.fromMap(dish.data())).toList();
     return dishes;
   }
 }

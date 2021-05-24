@@ -10,42 +10,45 @@ class MoreCategoryPage extends StatelessWidget {
   const MoreCategoryPage();
   @override
   Widget build(BuildContext context) {
-    final categoryProvider = context.watch<FoodCategoryProvider>();
-    final size = context.mediaQuerySize;
-    final categorySize = Size.square(size.width * .5);
+    print('build MoreCategoryPage');
     return Scaffold(
       appBar: AppBar(title: const Text('كل الأقسام')),
       body: BannerWrapList(
         listType: ListType.ListBuilder,
-        listBuilder: _moreCategorylistBuilder(categoryProvider, categorySize),
+        listBuilder: const MoreCategorylistBuilder(),
       ),
     );
   }
 }
 
-Widget _moreCategorylistBuilder(
-  FoodCategoryProvider categoryProvider,
-  Size categorySize,
-) {
-  return Padding(
-    padding: const EdgeInsets.all(4.0),
-    child: GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 4,
+class MoreCategorylistBuilder extends StatelessWidget {
+  const MoreCategorylistBuilder();
+  @override
+  Widget build(BuildContext context) {
+    print('build MoreCategorylistBuilder');
+    final categoryProvider = context.watch<FoodCategoryProvider>();
+    final size = context.mediaQuerySize;
+    final categorySize = Size.square(size.width * .5);
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+        ),
+        itemCount: categoryProvider.categories.length,
+        itemBuilder: (context, index) {
+          final category = categoryProvider.categories[index];
+          return InkWell(
+            onTap: () async => await navigateToCategoryPage(category.id),
+            child: CategoryGridTile(
+              category: category,
+              size: categorySize,
+            ),
+          );
+        },
       ),
-      itemCount: categoryProvider.categories.length,
-      itemBuilder: (context, index) {
-        final category = categoryProvider.categories[index];
-        return InkWell(
-          onTap: () async => await navigateToCategoryPage(category.id),
-          child: CategoryGridTile(
-            category: category,
-            size: categorySize,
-          ),
-        );
-      },
-    ),
-  );
+    );
+  }
 }

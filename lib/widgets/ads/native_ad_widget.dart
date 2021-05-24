@@ -11,11 +11,17 @@ class NativeAdWidget extends StatefulWidget {
   _NativeAdWidgetState createState() => _NativeAdWidgetState();
 }
 
-class _NativeAdWidgetState extends State<NativeAdWidget> {
+class _NativeAdWidgetState extends State<NativeAdWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
   late NativeAdController _nativeAdController;
   late StreamSubscription _subscription;
   @override
   void initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: kTabScrollDuration,
+    )..forward();
     _nativeAdController = NativeAdController();
     _subscription = _nativeAdController.onEvent.listen((event) {
       setState(() {});
@@ -25,23 +31,28 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
 
   @override
   void dispose() {
+    _nativeAdController.dispose();
     _subscription.cancel();
+    _animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: NativeAd(
-        unitId: NativeAdController.testUnitId,
-        buildLayout: smallAdTemplateLayoutBuilder,
-        controller: _nativeAdController,
-        builder: (context, child) {
-          return Container(
-            height: !_nativeAdController.isLoaded ? 0 : null,
-            child: child,
-          );
-        },
+    return ScaleTransition(
+      scale: _animationController,
+      child: Container(
+        child: NativeAd(
+          unitId: nativeUnitId,
+          buildLayout: smallAdTemplateLayoutBuilder,
+          controller: _nativeAdController,
+          builder: (context, child) {
+            return Container(
+              height: !_nativeAdController.isLoaded ? 0 : null,
+              child: child,
+            );
+          },
+        ),
       ),
     );
   }
