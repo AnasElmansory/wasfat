@@ -11,7 +11,6 @@ import 'package:wasfat_akl/providers/custom_fab_provider.dart';
 import 'package:wasfat_akl/providers/dish_comments_provider.dart';
 import 'package:wasfat_akl/providers/dish_likes_provider.dart';
 import 'package:wasfat_akl/providers/dishes_preferences.dart';
-import 'package:wasfat_akl/providers/dishes_provider.dart';
 import 'package:wasfat_akl/widgets/ads/banner_wrap_list.dart';
 import 'package:wasfat_akl/widgets/ads/native_ad_widget.dart';
 import 'package:wasfat_akl/widgets/core/divider_widget.dart';

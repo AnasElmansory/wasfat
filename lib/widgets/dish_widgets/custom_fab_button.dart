@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'package:provider/provider.dart';
 import 'package:wasfat_akl/models/dish.dart';
 import 'package:wasfat_akl/providers/dishes_preferences.dart';
-import 'package:wasfat_akl/providers/dishes_provider.dart';
 
 class CustomFabButton extends StatelessWidget {
   final Dish dish;

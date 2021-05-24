@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:native_admob_flutter/native_admob_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:wasfat_akl/providers/banner_provider.dart';

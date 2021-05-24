@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
-import 'package:getwidget/getwidget.dart';
 import 'package:wasfat_akl/providers/dish_likes_provider.dart';
 import 'package:wasfat_akl/widgets/core/cached_image.dart';
 import 'package:wasfat_akl/widgets/core/show_image_dialog.dart';
@@ -42,8 +41,7 @@ class _DishCustomBarState extends State<DishCustomBar> {
             ? const HideDishTitle()
             : ShowDishTitle(dishName: dish.name);
         return SliverAppBar(
-          backgroundColor:
-              isExpanded ? Colors.white : Colors.amber[800],
+          backgroundColor: isExpanded ? Colors.white : Colors.amber[800],
           expandedHeight: expandedHeight,
           title: bar,
           pinned: true,

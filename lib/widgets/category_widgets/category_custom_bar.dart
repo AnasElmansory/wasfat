@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
-import 'package:getwidget/getwidget.dart';
 import 'package:wasfat_akl/models/food_category.dart';
 import 'package:wasfat_akl/widgets/core/cached_image.dart';
 import 'package:wasfat_akl/widgets/core/show_image_dialog.dart';
@@ -32,8 +31,7 @@ class _CategoryCustomBarState extends State<CategoryCustomBar> {
         final isExpanded = height <= (expandedHeight * 0.5);
 
         return SliverAppBar(
-          backgroundColor:
-              isExpanded ? Colors.white : Colors.amber[800],
+          backgroundColor: isExpanded ? Colors.white : Colors.amber[800],
           expandedHeight: expandedHeight,
           title: Text(
             isExpanded ? '' : category.name,
