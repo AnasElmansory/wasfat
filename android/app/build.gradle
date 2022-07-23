@@ -24,6 +24,17 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+plugins {
+  id "org.sonarqube" version "3.4.0.2513"
+}
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "AnasElmansory_wasfat"
+    property "sonar.organization", "anaselmansory"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}
 
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
